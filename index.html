@@ -1,0 +1,481 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GNASS CCTU Chapter | Ghana Adventist Students Association</title>
+  <meta name="description" content="GNASS CCTU Chapter — worship times, ministries, sermons, events and giving for Adventist students at CCTU." />
+
+  <!-- Google Fonts: Space Grotesk for headings, DM Sans for body text -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Our own stylesheet -->
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+
+  <!-- Lets keyboard/screen-reader users jump straight to the content, skipping the nav -->
+  <a class="skip-link" href="#main">Skip to main content</a>
+
+  <!-- ============================= HEADER / NAV ============================= -->
+  <!-- position: sticky keeps this bar visible as the visitor scrolls down the page -->
+  <header class="site-header" id="site-header">
+    <div class="nav-inner">
+      <a href="#home" class="brand">
+        <img class="brand-logo" src="./gnasscctulogo.png" alt="GNASS CCTU Chapter logo" />
+        <span class="brand-name">GNASS <span>CCTU</span></span>
+      </a>
+
+      <!-- 5 links max, per the nav brief: Home / About / Ministries / Media / Give -->
+      <nav class="main-nav" id="main-nav" aria-label="Primary">
+        <a href="#about">About Us</a>
+        <a href="#ministries">Ministries</a>
+        <a href="#media">Media</a>
+        <a href="#live">Live</a>
+        <a href="#give">Give</a>
+      </nav>
+
+      <div class="nav-actions">
+        <!-- Dark mode toggle: JS flips a data-theme attribute on <html> -->
+        <button id="theme-toggle" class="icon-btn" type="button" aria-pressed="false" aria-label="Turn on dark mode">
+          <svg class="icon icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M4.2 4.2l1.8 1.8M18 18l1.8 1.8M2 12h2.5M19.5 12H22M4.2 19.8l1.8-1.8M18 6l1.8-1.8"/></svg>
+          <svg class="icon icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4 6.8 6.8 0 0 0 20 14.5Z"/></svg>
+        </button>
+
+        <a href="#give" class="btn btn-cta">Give</a>
+
+        <!-- Hamburger button, only shown on small screens (see CSS) -->
+        <button id="nav-toggle" class="icon-btn nav-toggle" type="button" aria-expanded="false" aria-controls="main-nav" aria-label="Open menu">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+
+    <!-- ============================= HERO ============================= -->
+    <section class="hero" id="home">
+      <!-- Public-domain pioneer portraits from Wikimedia Commons, combined into one archival collage. -->
+      <div class="hero-media" aria-label="Archival portraits of early Seventh-day Adventist pioneers">
+        <div class="pioneer-collage">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/7/75/James_and_Ellen_White.jpg" alt="James and Ellen White" />
+          <img src="https://upload.wikimedia.org/wikipedia/commons/9/9a/Joseph_Bates_%281865%29.jpg" alt="Joseph Bates" />
+          <img src="https://upload.wikimedia.org/wikipedia/commons/6/66/John_Nevins_Andrews.jpg" alt="John Nevins Andrews" />
+        </div>
+        <div class="hero-image-grade" aria-hidden="true"></div>
+      </div>
+      <div class="hero-content">
+        <p class="eyebrow">Ghana National Adventist Students' Association</p>
+        <h1>You're welcome home, before you even walk in.</h1>
+        <p class="hero-sub">GNASS CCTU is a family of Adventist students at Cape Coast Technical University — worshipping, growing and serving together every week.</p>
+        <div class="hero-ctas">
+          <a href="#media" class="btn btn-primary announcements-btn">Announcements</a>
+          <a href="#media" class="btn btn-ghost">Watch Latest Message</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================= SIGNATURE: SABBATH COUNTDOWN ======================= -->
+    <!-- This strip is the site's signature element — always visible, tied to the -->
+    <!-- one thing that makes an Adventist chapter's calendar different: Sabbath. -->
+    <section class="countdown-strip" aria-label="Sabbath countdown">
+      <div class="countdown-inner">
+        <div class="countdown-label">
+          <span id="countdown-status">Sabbath begins in</span>
+        </div>
+        <div class="countdown-clock" id="countdown-clock" aria-live="polite">
+          <div class="clock-unit"><span id="cd-days">00</span><small>days</small></div>
+          <div class="clock-unit"><span id="cd-hours">00</span><small>hrs</small></div>
+          <div class="clock-unit"><span id="cd-mins">00</span><small>min</small></div>
+          <div class="clock-unit"><span id="cd-secs">00</span><small>sec</small></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================= LATEST MESSAGE ============================= -->
+    <section class="section latest" id="latest">
+      <div class="container">
+        <div class="latest-card">
+          <div class="latest-thumb">
+            <video controls preload="metadata" aria-label="Pastor Lawrence Ewoo sermon video">
+              <source src="./sermons and events/pastor lawrence ewoo.mp4" type="video/mp4" />
+              Your browser does not support local video playback.
+            </video>
+          </div>
+          <div class="latest-info">
+            <p class="eyebrow">Latest Message</p>
+            <h2>Pastor Lawrence Ewoo</h2>
+            <p class="sermon-title">Walking with God in Everyday Life</p>
+            <p>Pastor Ewoo is a highly respected veteran Seventh-day Adventist minister, counselor, and leader in Ghana, renowned for his decades of dedicated gospel ministry and deep biblical teachings.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================= SERVICE SCHEDULE ============================= -->
+    <section class="section schedule" id="schedule">
+      <div class="container">
+        <p class="eyebrow">This Week</p>
+        <h2>Where to find us</h2>
+
+        <!-- A simple responsive grid of service cards -->
+        <div class="schedule-grid">
+          <div class="schedule-card">
+            <span class="schedule-day">Saturday</span>
+            <h3>Sabbath School</h3>
+            <p class="schedule-time">9:00 AM</p>
+            <p>Bible study in small groups, all departments welcome.</p>
+          </div>
+          <div class="schedule-card highlight">
+            <span class="schedule-day">Saturday</span>
+            <h3>Divine Service</h3>
+            <p class="schedule-time">10:30 AM</p>
+            <p>Worship, music and the weekly message. Our main gathering.</p>
+          </div>
+          <div class="schedule-card">
+            <span class="schedule-day">Wednesday</span>
+            <h3>Vespers</h3>
+            <p class="schedule-time">6:30 PM</p>
+            <p>A quieter, midweek reset — prayer, song and short devotion.</p>
+          </div>
+          <div class="schedule-card">
+            <span class="schedule-day">Friday</span>
+            <h3>Adventist Youth (AY)</h3>
+            <p class="schedule-time">7:00 PM</p>
+            <p>Fellowship, testimonies and welcoming Sabbath together.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================= ABOUT ============================= -->
+    <section class="section about" id="about">
+      <div class="container about-grid">
+        <div>
+          <p class="eyebrow">About Us</p>
+          <h2>A chapter, and a home</h2>
+          <p>GNASS CCTU exists to help Adventist students grow spiritually, academically and socially during their time on campus. We meet weekly, serve our wider campus community, and walk with students from freshers' week to graduation.</p>
+          <p>Chapter dues and offerings keep our ministries running — see the Give section below for how to support us.</p>
+        </div>
+        <div class="about-stats">
+          <div class="stat"><strong>300+</strong><span>Active members</span></div>
+          <div class="stat"><strong>6</strong><span>Ministries</span></div>
+          <div class="stat"><strong>Est. 1998</strong><span>Founded</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================= MINISTRIES ============================= -->
+    <section class="section ministries" id="ministries">
+      <div class="container">
+        <p class="eyebrow">Get Involved</p>
+        <h2>Ministries &amp; departments</h2>
+
+        <!-- repeat(auto-fit, minmax()) grid: cards reflow automatically at any screen width -->
+        <div class="ministry-grid">
+          <article class="ministry-card">
+            <div class="ministry-icon" aria-hidden="true">♪</div>
+            <h3>Music</h3>
+            <p>Choir, praise team and instrumentalists leading worship each week.</p>
+          </article>
+          <article class="ministry-card">
+            <div class="ministry-icon" aria-hidden="true">✚</div>
+            <h3>Welfare</h3>
+            <p>Practical support for students facing hardship — food, fees and care.</p>
+          </article>
+          <article class="ministry-card">
+            <div class="ministry-icon" aria-hidden="true">✉</div>
+            <h3>Evangelism</h3>
+            <p>Outreach programs, campus crusades and personal Bible studies.</p>
+          </article>
+          <article class="ministry-card">
+            <div class="ministry-icon" aria-hidden="true">⚽</div>
+            <h3>Sports</h3>
+            <p>Inter-chapter tournaments and fitness fellowship on the field.</p>
+          </article>
+          <article class="ministry-card">
+            <div class="ministry-icon" aria-hidden="true">✎</div>
+            <h3>Education</h3>
+            <p>Mentorship, tutoring and study groups for academic success.</p>
+          </article>
+          <article class="ministry-card">
+            <div class="ministry-icon" aria-hidden="true">☺</div>
+            <h3>Social</h3>
+            <p>Chapter socials, retreats and get-togethers that build friendship.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================= MEDIA (Netflix-style row) ============================= -->
+    <section class="section media" id="media">
+      <div class="container">
+        <p class="eyebrow">Media</p>
+        <h2>Sermons and Announcements</h2>
+        <p class="section-sub">Swap these placeholder cards for real thumbnails and links once your recordings are uploaded (e.g. to YouTube).</p>
+
+        <!-- overflow-x: auto + scroll-snap gives the horizontal "Netflix row" feel -->
+        <div class="media-row" tabindex="0" aria-label="Sermon recordings and Church Gallery, scroll horizontally">
+          <div class="media-card gallery-media-card">
+            <div class="gallery-stage">
+              <img src="./images/slideshows/IMG-20260114-WA0023.jpg" alt="GNASS CCTU Church Gallery image 1" />
+              <img src="./images/slideshows/IMG-20260114-WA0024.jpg" alt="GNASS CCTU Church Gallery image 2" />
+              <img src="./images/slideshows/IMG-20260114-WA0025.jpg" alt="GNASS CCTU Church Gallery image 3" />
+              <img src="./images/slideshows/IMG-20260114-WA0026.jpg" alt="GNASS CCTU Church Gallery image 4" />
+              <img src="./images/slideshows/IMG-20260114-WA0027.jpg" alt="GNASS CCTU Church Gallery image 5" />
+              <img src="./images/slideshows/IMG-20260114-WA0028.jpg" alt="GNASS CCTU Church Gallery image 6" />
+            </div>
+            <h3>Church Gallery</h3><span>Looping local slideshow</span>
+          </div>
+          <article class="media-card prayer-meeting-card">
+            <a href="https://meet.google.com/qfg-hkau-pug" target="_blank" rel="noopener noreferrer" aria-label="Open the daily GNAAS CCTU Fellowship Prayer Meeting on Google Meet">
+              <img class="prayer-meeting-image" src="./sermons and events/prayer meeting.png" alt="GNAAS CCTU Fellowship Prayer Meeting" />
+            </a>
+            <h3>Daily Prayer Meeting</h3>
+            <p class="prayer-meeting-summary">🙏🔥 <strong>GNAAS–CCTU Fellowship Prayer Meeting</strong> | The prayer room is open! Come as you are, pray without ceasing, and let’s seek God together. Everyone is welcome! 🔥🙏</p>
+          </article>
+          <article class="media-card anniversary-card">
+            <div class="anniversary-video-wrap">
+              <iframe src="https://www.youtube.com/embed?listType=search&amp;list=Pastor%20Lawrence%20Ewoo%2050th%20Anniversary%20Testimony" title="Pastor Ewoo 50th Anniversary Testimony" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+            </div>
+            <h3>Pastor Ewoo 50th Anniversary Testimony</h3>
+            <p class="anniversary-caption">If you are looking for more background on his impactful ministry, watch this powerful life testimony highlighting Pastor Ewoo's extensive experience and decades of dedicated service in Ghana.</p>
+            <a class="video-fallback-link" href="https://www.youtube.com/results?search_query=Pastor+Lawrence+Ewoo+50th+Anniversary+Testimony" target="_blank" rel="noopener noreferrer">Find this testimony on YouTube ↗</a>
+          </article>
+          <div class="media-card"><div class="media-thumb"></div><h3>Rest as Resistance</h3><span>Last week</span></div>
+          <div class="media-card"><div class="media-thumb"></div><h3>Building on the Rock</h3><span>2 weeks ago</span></div>
+          <div class="media-card"><div class="media-thumb"></div><h3>Week of Prayer: Day 3</h3><span>3 weeks ago</span></div>
+          <div class="media-card"><div class="media-thumb"></div><h3>AY Testimony Night</h3><span>Last month</span></div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ============================= SDA LIVE HUB ============================= -->
+    <section class="section live-hub" id="live">
+      <div class="container">
+        <p class="eyebrow">SDA Live</p>
+        <h2>Stay connected to the church</h2>
+        <p class="section-sub">Live news, Sabbath School study and trusted Adventist resources, refreshed from their official platforms.</p>
+
+        <div class="live-grid">
+          <article class="live-panel ann-panel">
+            <div class="panel-heading">
+              <div><span class="live-dot" aria-hidden="true"></span><span class="eyebrow">Adventist News Network</span></div>
+              <a href="https://adventist.news/" target="_blank" rel="noopener noreferrer">ANN <span aria-hidden="true">↗</span></a>
+            </div>
+            <div id="ann-feed" class="feed-list" aria-live="polite"><p class="feed-status">Loading the latest church news...</p></div>
+          </article>
+
+          <article class="live-panel lesson-panel">
+            <div class="panel-heading">
+              <div><span class="eyebrow">Sabbath School</span><span class="source-label">Live quarterly study</span></div>
+              <a href="https://sabbath.school/" target="_blank" rel="noopener noreferrer">Open <span aria-hidden="true">↗</span></a>
+            </div>
+            <div class="lesson-frame-wrap lesson-link-wrap">
+              <a class="btn btn-primary lesson-link" href="https://www.sabbath.school/" target="_blank" rel="noopener noreferrer">Read Today's Lesson <span aria-hidden="true">↗</span></a>
+            </div>
+          </article>
+        </div>
+
+        <div class="video-grid">
+          <article class="video-panel">
+            <div class="panel-heading">
+              <div><span class="eyebrow">Short videos</span><span class="source-label">Hope Channel Ghana Board</span></div>
+              <a href="https://www.tiktok.com/@hopechannelgh" target="_blank" rel="noopener noreferrer">TikTok <span aria-hidden="true">↗</span></a>
+            </div>
+            <div class="tiktok-embed-wrap">
+              <blockquote class="tiktok-embed" cite="https://www.tiktok.com/@hopechannelgh" data-unique-id="hopechannelgh" data-embed-type="creator" style="max-width: 780px; min-width: 288px;">
+                <section><a href="https://www.tiktok.com/@hopechannelgh" target="_blank" rel="noopener noreferrer">View Hope Channel Ghana Board on TikTok</a></section>
+              </blockquote>
+            </div>
+          </article>
+
+          <article class="video-panel">
+            <div class="panel-heading">
+              <div><span class="eyebrow">Weekly study video</span><span class="source-label">3ABN Sabbath School Panel</span></div>
+              <a href="https://3abnsabbathschoolpanel.com/" target="_blank" rel="noopener noreferrer">3ABN <span aria-hidden="true">↗</span></a>
+            </div>
+            <div class="threeabn-frame-wrap">
+              <iframe src="https://3abnsabbathschoolpanel.com/" title="3ABN Sabbath School Panel latest lesson" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+            </div>
+            <a class="video-fallback-link" href="https://3abnsabbathschoolpanel.com/" target="_blank" rel="noopener noreferrer">Open the latest 3ABN Sabbath School Panel lesson ↗</a>
+          </article>
+        </div>
+
+        <div class="resource-row" aria-label="Official Adventist resources">
+          <a class="resource-link" href="https://hopechannel.com/" target="_blank" rel="noopener noreferrer"><strong>Hope Channel</strong><span>Watch faith-filled programming ↗</span></a>
+          <a class="resource-link" href="https://awr.org/listen/" target="_blank" rel="noopener noreferrer"><strong>Adventist World Radio</strong><span>Listen live around the world ↗</span></a>
+          <a class="resource-link" href="https://egwwritings.org/" target="_blank" rel="noopener noreferrer"><strong>EGW Writings</strong><span>Search the writings database ↗</span></a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================= EVENTS (filterable) ============================= -->
+    <section class="section events" id="events">
+      <div class="container">
+        <p class="eyebrow">Calendar</p>
+        <h2>Upcoming events</h2>
+
+        <!-- Filter buttons: JS shows/hides matching .event-card elements by data-category -->
+        <div class="filter-bar" role="group" aria-label="Filter events by category">
+          <button class="filter-btn is-active" data-filter="all" type="button">All</button>
+          <button class="filter-btn" data-filter="worship" type="button">Worship</button>
+          <button class="filter-btn" data-filter="social" type="button">Social</button>
+          <button class="filter-btn" data-filter="outreach" type="button">Outreach</button>
+          <button class="filter-btn" data-filter="sports" type="button">Sports</button>
+        </div>
+
+        <div class="event-list">
+          <article class="event-card" data-category="worship">
+            <div class="event-date"><strong>14</strong><span>Sep</span></div>
+            <div class="event-info"><h3>Week of Spiritual Emphasis</h3><p>Five nights of revival — 6:30 PM, Main Auditorium.</p></div>
+            <span class="tag tag-worship">Worship</span>
+          </article>
+          <article class="event-card" data-category="social">
+            <div class="event-date"><strong>21</strong><span>Sep</span></div>
+            <div class="event-info"><h3>Chapter Social Night</h3><p>Games, food and fellowship — 5:00 PM, Student Square.</p></div>
+            <span class="tag tag-social">Social</span>
+          </article>
+          <article class="event-card" data-category="outreach">
+            <div class="event-date"><strong>28</strong><span>Sep</span></div>
+            <div class="event-info"><h3>Community Health Outreach</h3><p>Free screenings and Bible literature — 8:00 AM, Town Center.</p></div>
+            <span class="tag tag-outreach">Outreach</span>
+          </article>
+          <article class="event-card" data-category="sports">
+            <div class="event-date"><strong>5</strong><span>Oct</span></div>
+            <div class="event-info"><h3>Inter-Chapter Football</h3><p>GNASS CCTU vs. GNASS UCC — 3:00 PM, Sports Pitch.</p></div>
+            <span class="tag tag-sports">Sports</span>
+          </article>
+          <article class="event-card" data-category="worship">
+            <div class="event-date"><strong>18</strong><span>Oct</span></div>
+            <div class="event-info"><h3>Choir Rehearsal</h3><p>Open rehearsal, new voices welcome — 6:00 PM, Chapel.</p></div>
+            <span class="tag tag-worship">Worship</span>
+          </article>
+        </div>
+        <!-- Note: this is a static, client-side filtered list. A live calendar that -->
+        <!-- updates itself needs a backend or a service like Google Calendar's API. -->
+      </div>
+    </section>
+
+    <!-- ============================= EXECUTIVE TEAM ============================= -->
+    <section class="section team" id="team">
+      <div class="container">
+        <p class="eyebrow">Leadership</p>
+        <h2>Meet Your Executives</h2>
+        <div class="team-carousel" aria-live="polite">
+          <div class="team-grid team-grid-group is-visible">
+            <article class="team-card"><img class="team-photo" src="./images/Mr.Isaac Nyankson.jpeg" alt="Mr. Isaac Nyankson" /><h3>Mr. Isaac Nyankson</h3><span>President</span></article>
+            <article class="team-card"><img class="team-photo" src="./images/Mr. Kwame Boadu Amoah.png" alt="Mr. Kwame Boadu Amoah" /><h3>Mr. Kwame Boadu Amoah</h3><span>Vice President</span></article>
+            <article class="team-card"><div class="team-photo team-photo-silhouette" role="img" aria-label="Professional silhouette placeholder for Elder, Dr. Theophilus Adu Gyamfi"></div><h3>Elder, Dr. Theophilus Adu Gyamfi</h3><span>Chaplain</span></article>
+            <article class="team-card"><img class="team-photo" src="./images/Sarah Abena Wienu Secretary.jpeg" alt="Miss Sarah Abena Wienu" /><h3>Miss Sarah Abena Wienu</h3><span>Secretary</span></article>
+          </div>
+          <div class="team-grid team-grid-group" hidden>
+            <article class="team-card"><img class="team-photo" src="./images/Mr. Samuel Aidoo.jpeg" alt="Mr. Samuel Aidoo" /><h3>Mr. Samuel Aidoo</h3><span>Treasurer</span></article>
+            <article class="team-card"><img class="team-photo" src="./images/Nelson Bayagimbey  Coordinator.jpeg" alt="Mr. Nelson Bayagimbey" /><h3>Mr. Nelson Bayagimbey</h3><span>Coordinator</span></article>
+            <article class="team-card"><img class="team-photo" src="./images/Tweneboah Jacqueline Deputy Coordinator.jpeg" alt="Miss Tweneboah Jacqueline" /><h3>Miss Tweneboah Jacqueline</h3><span>Deputy Coordinator</span></article>
+            <article class="team-card"><img class="team-photo" src="./images/Takyiwaa Vanuella Sabbath School leader.jpeg" alt="Miss Takyiwaa Vanuella" /><h3>Miss Takyiwaa Vanuella</h3><span>Sabbath School Leader</span></article>
+          </div>
+          <div class="team-grid team-grid-group" hidden>
+            <article class="team-card"><div class="team-photo team-photo-silhouette" role="img" aria-label="Professional silhouette placeholder for Mr. Isaac Apegya"></div><h3>Mr. Isaac Apegya</h3><span>Personal Ministry</span></article>
+            <article class="team-card"><div class="team-photo team-photo-silhouette" role="img" aria-label="Professional silhouette placeholder for Mr. Emmanuel Sam"></div><h3>Mr. Emmanuel Sam</h3><span>Interest Coordinator</span></article>
+            <article class="team-card"><img class="team-photo" src="./images/Francis Annu  Music leader.jpeg" alt="Mr. Francis Annu" /><h3>Mr. Francis Annu</h3><span>Music Leader</span></article>
+            <article class="team-card"><img class="team-photo" src="./images/Stephen Dwamena  Media and publicity.JPG" alt="Mr. Stephen Dwamena" /><h3>Mr. Stephen Dwamena</h3><span>Media and Publicity</span></article>
+            <article class="team-card"><img class="team-photo" src="./images/Bright Appiah Deacon.jpeg" alt="Mr. Bright Appiah" /><h3>Mr. Bright Appiah</h3><span>Deacon</span></article>
+            <article class="team-card"><img class="team-photo" src="./images/Leticia Quansah Deaconess.jpeg" alt="Miss Leticia Quansah" /><h3>Miss Leticia Quansah</h3><span>Deaconess</span></article>
+            <article class="team-card"><img class="team-photo" src="./images/Enoch Abraham Arthur Newton  Event and project.jpg" alt="Mr. Enoch Abraham Arthur Newton" /><h3>Mr. Enoch Abraham Arthur Newton</h3><span>Event and Project</span></article>
+          </div>
+        </div>
+        <button class="view-more-btn" id="view-more-executives" type="button" aria-expanded="false" aria-label="Show next executive group">View More <span aria-hidden="true">+</span></button>
+      </div>
+    </section>
+
+    <!-- ============================= PRAYER WALL ============================= -->
+    <section class="section prayer" id="prayer">
+      <div class="container">
+        <p class="eyebrow">Prayer Wall</p>
+        <h2>Share a request</h2>
+        <p class="section-sub">This demo adds your request to the page instantly, but it won't be saved after you leave — a real prayer wall needs a backend/database to store and share requests. See the comment in script.js.</p>
+
+        <form id="prayer-form" class="prayer-form">
+          <label for="prayer-name">Your name (optional)</label>
+          <input type="text" id="prayer-name" placeholder="Anonymous" />
+
+          <label for="prayer-request">Your prayer request</label>
+          <textarea id="prayer-request" required placeholder="Share what's on your heart..."></textarea>
+
+          <button type="submit" class="btn btn-primary">Submit Request</button>
+        </form>
+
+        <ul class="prayer-list" id="prayer-list" aria-live="polite">
+          <li class="prayer-item"><strong>Nana</strong><p>Praying for strength through exams this semester.</p></li>
+          <li class="prayer-item"><strong>Anonymous</strong><p>For safe travel home for the holidays.</p></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ============================= GIVE ============================= -->
+    <section class="section give" id="give">
+      <div class="container give-inner">
+        <p class="eyebrow">Give</p>
+        <h2>Tithes, offerings &amp; chapter dues</h2>
+        <p>Your giving keeps GNASS CCTU's ministries running — from welfare support to outreach programs.</p>
+        <div class="give-options">
+          <a href="#" class="give-card"><h3>Tithe</h3><p>Return the Lord's tithe.</p></a>
+          <a href="#" class="give-card"><h3>Offering</h3><p>Support weekly ministry needs.</p></a>
+          <a href="#" class="give-card"><h3>Chapter Dues</h3><p>Keep the chapter running smoothly.</p></a>
+        </div>
+        <!-- These buttons are placeholders. To take real payments, connect a -->
+        <!-- provider such as Paystack, Flutterwave or PayPal — that requires a -->
+        <!-- secure backend and shouldn't be built with plain HTML/CSS/JS alone. -->
+        <p class="give-note">Secure online giving is coming soon. For now, please see an executive member after service.</p>
+      </div>
+    </section>
+
+    <!-- ============================= ALUMNI ============================= -->
+    <section class="section alumni" id="alumni">
+      <div class="container alumni-inner">
+        <div>
+          <p class="eyebrow">Alumni</p>
+          <h2>Once GNASS, always GNASS</h2>
+          <p>Stay connected with the chapter you grew in. Join the alumni network to hear about homecoming, mentor current students, and give back.</p>
+        </div>
+        <a href="https://chat.whatsapp.com/3kEcmHXQ5INL2euYSKOCe5" class="btn btn-primary whatsapp-btn" target="_blank" rel="noopener noreferrer"><span aria-hidden="true">◉</span> Join Alumni WhatsApp</a>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ============================= FOOTER ============================= -->
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div>
+        <img class="brand-logo" src="./gnasscctulogo.png" alt="GNASS CCTU Chapter logo" />
+        <p>GNASS CCTU Chapter<br />Cape Coast Technical University</p>
+      </div>
+      <div>
+        <h4>Quick Links</h4>
+        <a href="#about">About Us</a>
+        <a href="#ministries">Ministries</a>
+        <a href="#events">Events</a>
+        <a href="#give">Give</a>
+      </div>
+      <div>
+        <h4>Connect</h4>
+        <a href="#">Instagram</a>
+        <a href="#">Facebook</a>
+        <a class="whatsapp-footer-link" href="https://chat.whatsapp.com/LS0VLLXvTgcCGrgi6CJksS" target="_blank" rel="noopener noreferrer">GNASS CCTU COMMUNITY</a>
+        <a href="https://github.com/amoahkwameboadu-gif/GNASS-CCTU-CHAPTER" target="_blank" rel="noopener noreferrer">GitHub Repository</a>
+      </div>
+    </div>
+    <p class="footer-copy">© <span id="year"></span> GNASS CCTU Chapter. <strong>Builders for Christ</strong>.</p>
+  </footer>
+
+  <!-- Our own JavaScript -->
+  <script src="./script.js" defer></script>
+  <script async src="https://www.tiktok.com/embed.js"></script>
+</body>
+</html>

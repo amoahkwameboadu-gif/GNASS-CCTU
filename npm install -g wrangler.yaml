@@ -1,0 +1,3 @@
+npm install -g wrangler
+wrangler login
+wrangler pages deploy . --project-name=gnass-cctu-chapter

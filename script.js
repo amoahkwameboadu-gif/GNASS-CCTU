@@ -248,11 +248,9 @@ filterButtons.forEach((btn) => {
 });
 
 
-/* ---------- 6. Prayer wall demo ---------- */
+/* ---------- 6. Prayer wall with SMS submission ---------- */
 // Adds a new request card to the top of the list when the form is submitted.
-// IMPORTANT: this only lives in the browser's memory for this visit — reload
-// the page and it's gone. A real prayer wall needs a backend (a server +
-// database) to save requests and show them to other visitors too.
+// Opens the user's default SMS app with the prayer request pre-filled.
 const prayerForm = document.getElementById('prayer-form');
 const prayerList = document.getElementById('prayer-list');
 
@@ -265,10 +263,12 @@ prayerForm.addEventListener('submit', (event) => {
   const request = requestInput.value.trim();
   if (!request) return;
 
+  // Create prayer request text for SMS
+  const prayerRequestText = `Prayer Request from ${name}:\n${request}`;
+
+  // Add to local prayer list immediately
   const item = document.createElement('li');
   item.className = 'prayer-item';
-  // textContent (not innerHTML) is used here so a visitor can't accidentally
-  // inject HTML/scripts into the page through the form.
   const nameEl = document.createElement('strong');
   nameEl.textContent = name;
   const requestEl = document.createElement('p');
@@ -277,6 +277,9 @@ prayerForm.addEventListener('submit', (event) => {
 
   prayerList.prepend(item);
   prayerForm.reset();
+
+  // Trigger SMS protocol
+  window.location.href = "sms:0509511619?body=" + encodeURIComponent(prayerRequestText);
 });
 
 

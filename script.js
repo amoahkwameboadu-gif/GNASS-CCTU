@@ -5,6 +5,59 @@
 
 document.documentElement.classList.add('js-enabled');
 
+/* ---------- 0. Ghana Time (Africa/Accra) Utilities ---------- */
+// Ghana uses GMT (UTC+0) year-round — no DST. All date/time calculations
+// for the countdown and schedule highlighting must use this timezone.
+const GHANA_TZ = 'Africa/Accra';
+
+/**
+ * Returns a Date object representing "now" in Ghana Time.
+ * Uses Intl.DateTimeFormat to get accurate time in Africa/Accra.
+ */
+function getGhanaNow() {
+  // Get the current time in Ghana timezone
+  const formatter = new Intl.DateTimeFormat('en-GB', {
+    timeZone: GHANA_TZ,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false,
+  });
+  const parts = formatter.formatToParts(new Date());
+  const get = (type) => parts.find(p => p.type === type)?.value || '0';
+  const year = Number(get('year'));
+  const month = Number(get('month')) - 1; // JS months are 0-indexed
+  const day = Number(get('day'));
+  const hour = Number(get('hour'));
+  const minute = Number(get('minute'));
+  const second = Number(get('second'));
+  return new Date(Date.UTC(year, month, day, hour, minute, second));
+}
+
+/**
+ * Returns the day of week (0=Sun, 6=Sat) in Ghana Time.
+ */
+function getGhanaDay() {
+  return getGhanaNow().getUTCDay();
+}
+
+/**
+ * Returns the current hour (0-23) in Ghana Time.
+ */
+function getGhanaHour() {
+  return getGhanaNow().getUTCHours();
+}
+
+/**
+ * Returns the current minute (0-59) in Ghana Time.
+ */
+function getGhanaMinute() {
+  return getGhanaNow().getUTCMinutes();
+}
+
 /* ---------- 1. Footer year ---------- */
 // Keeps the copyright year correct forever, without editing HTML by hand.
 document.getElementById('year').textContent = new Date().getFullYear();
@@ -55,11 +108,11 @@ mainNav.querySelectorAll('a').forEach((link) => {
 });
 
 
-/* ---------- 4. Sabbath countdown ---------- */
+/* ---------- 4. Sabbath countdown (Ghana Time) ---------- */
 // Ghana uses GMT/UTC+0, so the countdown uses UTC throughout regardless of
 // the visitor's local timezone.
 function getNextSabbathStart() {
-  const now = new Date();
+  const now = getGhanaNow(); // Use Ghana Time
   const target = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 18, 0, 0, 0));
 
   const FRIDAY = 5;
@@ -81,7 +134,7 @@ const sEl = document.getElementById('cd-secs');
 function pad(num) { return String(num).padStart(2, '0'); }
 
 function tickCountdown() {
-  const now = new Date();
+  const now = getGhanaNow(); // Use Ghana Time
   const target = getNextSabbathStart();
   let diff = target - now;
 
@@ -108,6 +161,84 @@ function tickCountdown() {
 
 tickCountdown();
 setInterval(tickCountdown, 1000);
+
+
+/* ---------- 5. Weekly Schedule — Dynamic Activity Highlighting (Ghana Time) ---------- */
+// Checks the current day/time in Ghana and applies the "current" class
+// to the schedule card for the activity happening right now.
+// If no activity is ongoing, removes the highlight from all cards.
+const scheduleCards = document.querySelectorAll('.schedule-grid .schedule-card');
+
+/**
+ * Determines which schedule card (if any) should be highlighted based on
+ * the current day and time in Ghana Time (Africa/Accra).
+ * Schedule:
+ * - Saturday: Sabbath School (9:00 AM - 10:30 AM)
+ * - Saturday: Divine Service (10:30 AM - 12:30 PM approx)
+ * - Wednesday: Vespers (6:30 PM - 8:00 PM approx)
+ * - Friday: Adventist Youth (AY) (7:00 PM - 9:00 PM approx)
+ */
+function updateScheduleHighlight() {
+  const day = getGhanaDay(); // 0=Sun, 1=Mon, ..., 6=Sat
+  const hour = getGhanaHour();
+  const minute = getGhanaMinute();
+  const timeInMinutes = hour * 60 + minute;
+
+  // Remove "current" from all cards first
+  scheduleCards.forEach(card => card.classList.remove('current'));
+
+  // Saturday = 6 (using getUTCDay since we're using UTC-based Ghana time)
+  // Note: getUTCDay() returns 6 for Saturday
+  const SATURDAY = 6;
+  const WEDNESDAY = 3;
+  const FRIDAY = 5;
+
+  let targetCard = null;
+
+  if (day === SATURDAY) {
+    // Sabbath School: 9:00 AM - 10:30 AM (540 - 630 minutes)
+    if (timeInMinutes >= 540 && timeInMinutes < 630) {
+      targetCard = document.querySelector('.schedule-card:nth-child(1)');
+    }
+    // Divine Service: 10:30 AM - 12:30 PM (630 - 750 minutes)
+    else if (timeInMinutes >= 630 && timeInMinutes < 750) {
+      targetCard = document.querySelector('.schedule-card:nth-child(2)');
+    }
+  } else if (day === WEDNESDAY) {
+    // Vespers: 6:30 PM - 8:00 PM (1110 - 1200 minutes)
+    if (timeInMinutes >= 1110 && timeInMinutes < 1200) {
+      targetCard = document.querySelector('.schedule-card:nth-child(3)');
+    }
+  } else if (day === FRIDAY) {
+    // Adventist Youth (AY): 7:00 PM - 9:00 PM (1140 - 1260 minutes)
+    if (timeInMinutes >= 1140 && timeInMinutes < 1260) {
+      targetCard = document.querySelector('.schedule-card:nth-child(4)');
+    }
+  }
+
+  // Apply highlight to current activity
+  if (targetCard) {
+    targetCard.classList.add('current');
+    // Also remove the static "highlight" class from the Divine Service card
+    // so only the dynamic "current" class controls highlighting
+    const staticHighlight = document.querySelector('.schedule-card.highlight');
+    if (staticHighlight && staticHighlight !== targetCard) {
+      staticHighlight.classList.remove('highlight');
+    }
+  } else {
+    // No activity currently — ensure static highlight is restored for Divine Service
+    // (optional: you can choose to keep it or remove it)
+    const staticHighlight = document.querySelector('.schedule-card.highlight');
+    if (!staticHighlight) {
+      const divineServiceCard = document.querySelector('.schedule-card:nth-child(2)');
+      if (divineServiceCard) divineServiceCard.classList.add('highlight');
+    }
+  }
+}
+
+// Run immediately and then every 30 seconds to keep in sync
+updateScheduleHighlight();
+setInterval(updateScheduleHighlight, 30 * 1000);
 
 
 /* ---------- 5. Event filtering ---------- */

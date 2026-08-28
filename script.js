@@ -166,7 +166,7 @@ setInterval(tickCountdown, 1000);
 /* ---------- 5. Weekly Schedule — Dynamic Activity Highlighting (Ghana Time) ---------- */
 // Checks the current day/time in Ghana and applies the "current" class
 // to the schedule card for the activity happening right now.
-// If no activity is ongoing, removes the highlight from all cards.
+// If no activity is ongoing, removes the highlight from ALL cards.
 const scheduleCards = document.querySelectorAll('.schedule-grid .schedule-card');
 
 /**
@@ -184,7 +184,7 @@ function updateScheduleHighlight() {
   const minute = getGhanaMinute();
   const timeInMinutes = hour * 60 + minute;
 
-  // Remove "current" from all cards first
+  // Remove "current" from ALL cards first
   scheduleCards.forEach(card => card.classList.remove('current'));
 
   // Saturday = 6 (using getUTCDay since we're using UTC-based Ghana time)
@@ -216,24 +216,11 @@ function updateScheduleHighlight() {
     }
   }
 
-  // Apply highlight to current activity
+  // Apply highlight ONLY to current activity
   if (targetCard) {
     targetCard.classList.add('current');
-    // Also remove the static "highlight" class from the Divine Service card
-    // so only the dynamic "current" class controls highlighting
-    const staticHighlight = document.querySelector('.schedule-card.highlight');
-    if (staticHighlight && staticHighlight !== targetCard) {
-      staticHighlight.classList.remove('highlight');
-    }
-  } else {
-    // No activity currently — ensure static highlight is restored for Divine Service
-    // (optional: you can choose to keep it or remove it)
-    const staticHighlight = document.querySelector('.schedule-card.highlight');
-    if (!staticHighlight) {
-      const divineServiceCard = document.querySelector('.schedule-card:nth-child(2)');
-      if (divineServiceCard) divineServiceCard.classList.add('highlight');
-    }
   }
+  // If no activity is ongoing, NO card gets highlighted (all highlights removed above)
 }
 
 // Run immediately and then every 30 seconds to keep in sync

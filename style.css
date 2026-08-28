@@ -89,10 +89,8 @@ a { transition: color .18s ease, background-color .18s ease, border-color .18s e
 .schedule-grid { display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid var(--line); }
 .schedule-card { min-height: 220px; padding: 1.5rem 1.2rem; border-right: 1px solid var(--line); }
 .schedule-card:last-child { border-right: 0; }
-.schedule-card.highlight { background: var(--yellow); color: var(--charcoal); }
 .schedule-card.current { background: var(--yellow); color: var(--charcoal); box-shadow: 0 0 0 3px var(--yellow); }
 .schedule-day { color: var(--muted); font-size: .72rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
-.highlight .schedule-day { color: rgba(20,20,20,.64); }
 .current .schedule-day { color: rgba(20,20,20,.64); }
 .schedule-card h3 { margin-top: 2.5rem; }
 .schedule-time { margin-top: .4rem; font-family: var(--font-display); font-size: 1.4rem; font-weight: 700; }

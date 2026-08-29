@@ -137,6 +137,175 @@ a { transition: color .18s ease, background-color .18s ease, border-color .18s e
 .gallery-stage img:nth-child(5) { animation-delay: 12s; }
 .gallery-stage img:nth-child(6) { animation-delay: 15s; }
 @keyframes gallery-slide { 0%, 16% { opacity: 1; } 20%, 100% { opacity: 0; } }
+
+/* ============================= REELS (YouTube Shorts style horizontal scroll) ============================= */
+.reels-row {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  padding-block: 1rem .5rem;
+  scroll-snap-type: x mandatory;
+  scrollbar-color: var(--yellow) transparent;
+  scroll-padding-inline: clamp(1rem, 4vw, 1.5rem);
+  touch-action: pan-x;
+  -webkit-overflow-scrolling: touch;
+}
+
+.reel-card {
+  flex: 0 0 clamp(200px, 28vw, 260px);
+  scroll-snap-align: start;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+
+.reel-card:not(.reel-view-more):hover {
+  transform: translateY(-4px);
+}
+
+.reel-thumb {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 9 / 16;
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--charcoal);
+  display: grid;
+  place-items: center;
+  margin-bottom: .75rem;
+}
+
+.reel-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform .3s ease;
+}
+
+.reel-card:not(.reel-view-more):hover .reel-thumb img {
+  transform: scale(1.04);
+}
+
+.reel-play-icon {
+  pointer-events: none;
+  z-index: 1;
+}
+
+.reel-link {
+  text-decoration: none;
+  color: inherit;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.reel-link:focus-visible .reel-thumb,
+.reel-view-more:focus-visible .reel-thumb {
+  outline: 3px solid var(--yellow);
+  outline-offset: 3px;
+}
+
+.reel-info h3 {
+  font-size: .95rem;
+  font-weight: 700;
+  margin-bottom: .2rem;
+}
+
+.reel-info span {
+  color: var(--muted);
+  font-size: .75rem;
+}
+
+.reel-view-more {
+  border: 2px dashed var(--line);
+  background: transparent;
+  cursor: pointer;
+}
+
+.reel-view-more:hover {
+  border-color: var(--yellow);
+  background: rgba(245, 196, 0, .08);
+  transform: none;
+}
+
+.reel-view-more .reel-thumb {
+  border: 0;
+}
+
+/* ============================= SLIDESHOW (Event Highlights Reel) ============================= */
+.slideshow-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.slideshow-track {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.slideshow-slide {
+  flex: 0 0 100%;
+  width: 100%;
+  height: 100%;
+}
+
+.slideshow-slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.slideshow-indicators {
+  position: absolute;
+  bottom: 0.75rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 0.5rem;
+  z-index: 10;
+}
+
+.slideshow-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 254, 250, 0.5);
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.slideshow-indicator.active {
+  background: var(--yellow);
+  transform: scale(1.2);
+}
+
+.slideshow-indicator:hover {
+  background: rgba(255, 254, 250, 0.8);
+}
+
+@media (max-width: 720px) {
+  .reel-card {
+    flex: 0 0 clamp(180px, 35vw, 240px);
+  }
+}
+
+@media (max-width: 480px) {
+  .reel-card {
+    flex: 0 0 clamp(160px, 40vw, 220px);
+  }
+  .reels-row {
+    gap: .75rem;
+  }
+}
 .live-hub { background: var(--royal); color: var(--white); padding-block: clamp(3.25rem, 7vw, 6.5rem); }
 .live-hub .eyebrow { color: var(--yellow); }
 .live-hub h2 { margin-top: .4rem; margin-bottom: .7rem; }

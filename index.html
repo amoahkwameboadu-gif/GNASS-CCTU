@@ -99,16 +99,16 @@
       <div class="container">
         <div class="latest-card">
           <div class="latest-thumb">
-            <video controls preload="metadata" aria-label="Pastor Lawrence Ewoo sermon video">
-              <source src="sermons%20and%20events/pastor%20lawrence%20ewoo.mp4" type="video/mp4" />
+            <video controls preload="metadata" aria-label="GNAAS Congress 2026 video">
+              <source src="sermons%20and%20events/congress.mp4" type="video/mp4" />
               Your browser does not support local video playback.
             </video>
           </div>
           <div class="latest-info">
             <p class="eyebrow">Latest Message</p>
-            <h2>Pastor Lawrence Ewoo</h2>
-            <p class="sermon-title">Walking with God in Everyday Life</p>
-            <p>Pastor Ewoo is a highly respected veteran Seventh-day Adventist minister, counselor, and leader in Ghana, renowned for his decades of dedicated gospel ministry and deep biblical teachings.</p>
+            <h2>GNAAS Congress 2026</h2>
+            <p class="sermon-title">One Week.🌝 One Purpose.🪢 One Flame🔥</p>
+            <p>Be present to witness this year's GNAAS Congress. Sept. 20-27 | St. Monica's College, Asante Mampong. Register Now🤗: http://congress.gnaas.org ©️GNAAS NATIONAL 2026</p>
           </div>
         </div>
       </div>
@@ -214,33 +214,80 @@
       <div class="container">
         <p class="eyebrow">Media</p>
         <h2>Sermons and Announcements</h2>
-        <p class="section-sub">Swap these placeholder cards for real thumbnails and links once your recordings are uploaded (e.g. to YouTube).</p>
+        <p class="section-sub">Explore our latest media highlights, featured announcements, and community reels below.</p>
 
-        <!-- overflow-x: auto + scroll-snap gives the horizontal "Netflix row" feel -->
-        <div class="media-row" tabindex="0" aria-label="Sermon recordings and Church Gallery, scroll horizontally">
-          <div class="media-card gallery-media-card">
-            <div class="gallery-stage">
-              <img src="images/slideshows/IMG-20260114-WA0023.jpg" alt="GNAAS CCTU Church Gallery image 1" />
-              <img src="images/slideshows/IMG-20260114-WA0024.jpg" alt="GNAAS CCTU Church Gallery image 2" />
-              <img src="images/slideshows/IMG-20260114-WA0025.jpg" alt="GNAAS CCTU Church Gallery image 3" />
-              <img src="images/slideshows/IMG-20260114-WA0026.jpg" alt="GNAAS CCTU Church Gallery image 4" />
-              <img src="images/slideshows/IMG-20260114-WA0027.jpg" alt="GNAAS CCTU Church Gallery image 5" />
-              <img src="images/slideshows/IMG-20260114-WA0028.jpg" alt="GNAAS CCTU Church Gallery image 6" />
+        <!-- Reels horizontal scroll (YouTube Shorts style) -->
+        <div class="reels-row" tabindex="0" aria-label="Community reels, scroll horizontally">
+          <!-- Reel 1: Event Highlights Slideshow -->
+          <article class="reel-card" id="event-highlights-reel">
+            <div class="reel-thumb slideshow-container" aria-label="Event Highlights slideshow">
+              <div class="slideshow-track" id="slideshow-track">
+                <!-- Slides will be inserted here by JavaScript -->
+              </div>
+              <div class="slideshow-indicators" id="slideshow-indicators" aria-label="Slide indicators"></div>
             </div>
-            <h3>Church Gallery</h3>
-          </div>
-          <article class="media-card prayer-meeting-card">
-            <div class="prayer-video-wrap">
-              <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="GNAAS CCTU Fellowship Prayer Meeting" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+            <div class="reel-info">
+              <h3>Event Highlights</h3>
+              <span>Recent chapter events and activities</span>
             </div>
-            <h3>Daily Prayer Meeting</h3>
           </article>
-          <article class="media-card anniversary-card">
-            <div class="anniversary-video-wrap">
-              <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="Pastor Ewoo 50th Anniversary Testimony" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+
+          <!-- Reel 2: Church Dues & Welfare -->
+          <article class="reel-card">
+            <div class="reel-thumb">
+              <img src="sermons%20and%20events/CHURCH%20DUES%202.png" alt="Church Dues & Welfare" loading="lazy" onerror="this.onerror=null;this.src='https://i.ibb.co/1CnkvWT/CHURCH-DUES-2.png';" />
             </div>
-            <h3>Pastor Ewoo 50th Anniversary Testimony</h3>
+            <div class="reel-info">
+              <h3>Church Dues & Welfare</h3>
+              <span>Support our chapter</span>
+            </div>
           </article>
+
+          <!-- Reel 3: Virtual Prayer Meeting (linked) -->
+          <article class="reel-card">
+            <a href="https://meet.google.com/qfg-hkau-pug" target="_blank" rel="noopener noreferrer" class="reel-link" aria-label="Join Virtual Prayer Meeting">
+              <div class="reel-thumb">
+                <img src="sermons%20and%20events/prayer%20meeting.jpg" alt="Virtual Prayer Meeting" loading="lazy" onerror="this.onerror=null;this.src='https://i.ibb.co/4g1NgMqs/prayer-meeting.jpg';" />
+              </div>
+              <div class="reel-info">
+                <h3>Virtual Prayer Meeting</h3>
+                <span>Join us live</span>
+              </div>
+            </a>
+          </article>
+
+          <!-- Reel 4: Generic placeholder -->
+          <article class="reel-card">
+            <div class="reel-thumb" style="background: var(--yellow);">
+              <svg class="reel-play-icon" viewBox="0 0 24 24" aria-hidden="true" style="width:48px;height:48px;fill:var(--charcoal);"><path d="M8 5v14l11-7z"/></svg>
+            </div>
+            <div class="reel-info">
+              <h3>Upcoming Event</h3>
+              <span>Stay tuned for details</span>
+            </div>
+          </article>
+
+          <!-- Reel 5: Generic placeholder -->
+          <article class="reel-card">
+            <div class="reel-thumb" style="background: var(--royal-deep);">
+              <svg class="reel-play-icon" viewBox="0 0 24 24" aria-hidden="true" style="width:48px;height:48px;fill:var(--yellow);"><path d="M8 5v14l11-7z"/></svg>
+            </div>
+            <div class="reel-info">
+              <h3>Share Your Story</h3>
+              <span>Submit a reel</span>
+            </div>
+          </article>
+
+          <!-- View More Reels arrow button -->
+          <button class="reel-card reel-view-more" type="button" aria-label="View more reels">
+            <div class="reel-thumb">
+              <svg viewBox="0 0 24 24" aria-hidden="true" style="width:36px;height:36px;fill:none;stroke:var(--yellow);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </div>
+            <div class="reel-info">
+              <h3>View More Reels</h3>
+              <span>Explore all content</span>
+            </div>
+          </button>
         </div>
 
       </div>

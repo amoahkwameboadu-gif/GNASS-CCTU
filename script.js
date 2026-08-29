@@ -387,3 +387,147 @@ executiveButton.addEventListener('click', () => {
 });
 
 
+/* ---------- 10. Event Highlights Slideshow (First Reel) ---------- */
+// Automatic image slideshow for the first reel card
+// Reads images from images/slideshows/ folder and cycles through them with smooth transitions
+
+const slideshowTrack = document.getElementById('slideshow-track');
+const slideshowIndicators = document.getElementById('slideshow-indicators');
+
+// List of images in the slideshows folder
+const slideshowImages = [
+  'IMG-20260114-WA0023.jpg',
+  'IMG-20260114-WA0024.jpg',
+  'IMG-20260114-WA0025.jpg',
+  'IMG-20260114-WA0026.jpg',
+  'IMG-20260114-WA0027.jpg',
+  'IMG-20260114-WA0028.jpg',
+  'IMG-20260114-WA0029.jpg',
+  'IMG-20260114-WA0030.jpg',
+  'IMG-20260114-WA0031.jpg',
+  'IMG-20260114-WA0032.jpg',
+  'IMG-20260114-WA0033.jpg',
+  'IMG-20260114-WA0047.jpg',
+  'IMG-20260114-WA0048.jpg',
+  'IMG-20260114-WA0049.jpg',
+  'IMG-20260114-WA0050.jpg',
+  'IMG-20260114-WA0051.jpg',
+  'IMG-20260114-WA0052.jpg',
+  'IMG-20260114-WA0053.jpg',
+  'IMG-20260114-WA0054.jpg',
+  'IMG-20260114-WA0055.jpg',
+  'IMG-20260114-WA0056.jpg',
+  'IMG-20260114-WA0057.jpg',
+  'IMG-20260114-WA0058.jpg',
+  'IMG-20260114-WA0059.jpg',
+  'IMG-20260114-WA0060.jpg',
+  'IMG-20260114-WA0061.jpg',
+  'IMG-20260114-WA0062.jpg',
+  'IMG-20260114-WA0063.jpg',
+  'IMG-20260114-WA0064.jpg',
+  'IMG-20260114-WA0065.jpg',
+  'IMG-20260123-WA0024.jpg',
+  'IMG-20260123-WA0025.jpg',
+  'IMG-20260123-WA0026.jpg',
+  'IMG-20260123-WA0027.jpg',
+  'IMG-20260123-WA0028.jpg',
+  'IMG-20260123-WA0029.jpg',
+  'IMG-20260123-WA0030.jpg',
+  'IMG-20260123-WA0031.jpg',
+  'IMG-20260123-WA0032.jpg',
+  'IMG-20260123-WA0033.jpg',
+  'IMG-20260123-WA0034.jpg',
+  'IMG-20260123-WA0035.jpg',
+  'IMG-20260123-WA0036.jpg',
+  'IMG-20260123-WA0037.jpg',
+  'IMG-20260123-WA0038.jpg',
+  'IMG-20260124-WA0002.jpg',
+  'IMG-20260124-WA0003.jpg',
+  'IMG-20260124-WA0004.jpg',
+  'IMG-20260124-WA0005.jpg',
+  'IMG-20260124-WA0006.jpg',
+  'IMG-20260124-WA0007.jpg',
+  'IMG-20260124-WA0008.jpg',
+  'IMG-20260202-WA0022.jpg',
+  'IMG-20260202-WA0024.jpg',
+  'IMG-20260202-WA0043.jpg',
+  'IMG-20260202-WA0107.jpg',
+  'IMG-20260202-WA0191.jpg',
+  'IMG-20260202-WA0229.jpg',
+  'IMG-20260202-WA0238.jpg',
+  'IMG-20260202-WA0241.jpg',
+  'IMG-20260202-WA0246.jpg'
+];
+
+let currentSlide = 0;
+let slideshowInterval;
+const SLIDE_DURATION = 4000; // 4 seconds per slide
+
+function initSlideshow() {
+  if (!slideshowTrack || !slideshowIndicators) return;
+
+  // Create slides
+  slideshowImages.forEach((imageName, index) => {
+    const slide = document.createElement('div');
+    slide.className = 'slideshow-slide';
+    slide.innerHTML = `<img src="images/slideshows/${imageName}" alt="Event Highlight ${index + 1}" loading="lazy" />`;
+    slideshowTrack.appendChild(slide);
+
+    // Create indicator
+    const indicator = document.createElement('button');
+    indicator.className = 'slideshow-indicator';
+    indicator.setAttribute('aria-label', `Go to slide ${index + 1}`);
+    indicator.addEventListener('click', () => goToSlide(index));
+    slideshowIndicators.appendChild(indicator);
+  });
+
+  // Start slideshow
+  startSlideshow();
+}
+
+function goToSlide(index) {
+  if (index < 0) index = slideshowImages.length - 1;
+  if (index >= slideshowImages.length) index = 0;
+  
+  currentSlide = index;
+  const translateX = -currentSlide * 100;
+  slideshowTrack.style.transform = `translateX(${translateX}%)`;
+  
+  // Update indicators
+  const indicators = slideshowIndicators.querySelectorAll('.slideshow-indicator');
+  indicators.forEach((indicator, i) => {
+    indicator.classList.toggle('active', i === currentSlide);
+  });
+}
+
+function nextSlide() {
+  goToSlide(currentSlide + 1);
+}
+
+function startSlideshow() {
+  // Initial indicator state
+  goToSlide(0);
+  
+  slideshowInterval = setInterval(nextSlide, SLIDE_DURATION);
+  
+  // Pause on hover
+  const slideshowContainer = document.querySelector('.slideshow-container');
+  if (slideshowContainer) {
+    slideshowContainer.addEventListener('mouseenter', () => {
+      clearInterval(slideshowInterval);
+    });
+    
+    slideshowContainer.addEventListener('mouseleave', () => {
+      slideshowInterval = setInterval(nextSlide, SLIDE_DURATION);
+    });
+  }
+}
+
+// Initialize slideshow when DOM is ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initSlideshow);
+} else {
+  initSlideshow();
+}
+
+

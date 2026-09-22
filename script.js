@@ -141,7 +141,7 @@ function tickCountdown() {
   // Sabbath lasts roughly 24 hours. Once we're inside that window, diff goes
   // negative and we say "Sabbath is here".
   if (diff <= 0 && diff > -24 * 60 * 60 * 1000) {
-    statusEl.textContent = 'Sabbath is here — enjoy the rest (Ghana time)';
+    statusEl.textContent = 'Sabbath is here — enjoy the rest';
     dEl.textContent = hEl.textContent = mEl.textContent = sEl.textContent = '00';
     return;
   }
@@ -152,7 +152,7 @@ function tickCountdown() {
   const mins = Math.floor((diff / (1000 * 60)) % 60);
   const secs = Math.floor((diff / 1000) % 60);
 
-  statusEl.textContent = 'Sabbath begins in Ghana time';
+  statusEl.textContent = 'Sabbath begins in';
   dEl.textContent = pad(days);
   hEl.textContent = pad(hours);
   mEl.textContent = pad(mins);
@@ -240,7 +240,7 @@ filterButtons.forEach((btn) => {
     btn.classList.add('is-active');
 
     const filter = btn.dataset.filter;
-    eventCards.forEach((card) => {
+    document.querySelectorAll('.event-card').forEach((card) => {
       const show = filter === 'all' || card.dataset.category === filter;
       card.style.display = show ? '' : 'none';
     });
@@ -332,8 +332,93 @@ async function loadAnnFeed() {
 loadAnnFeed();
 setInterval(loadAnnFeed, 15 * 60 * 1000);
 
+/* ---------- 9. Cloudflare content (fallback-safe) ---------- */
+async function loadChapterContent() {
+  try {
+    const response = await fetch('/api/content', { headers: { Accept: 'application/json' } });
+    if (!response.ok) return;
+    const data = await response.json();
+    const message = data.latestMessage;
+    if (message) {
+      document.getElementById('latest-title').textContent = message.title;
+      document.getElementById('latest-body').textContent = message.body;
+      if (message.mediaUrl) {
+        const media = document.getElementById('latest-media');
+        if (message.mediaType && message.mediaType.startsWith('video/')) {
+          media.querySelector('source').src = message.mediaUrl;
+          media.load();
+        } else if (message.mediaType && message.mediaType.startsWith('image/')) {
+          const image = document.createElement('img');
+          image.src = message.mediaUrl; image.alt = message.title;
+          media.replaceWith(image);
+        }
+      }
+    }
+    if (Array.isArray(data.events) && data.events.length) {
+      const list = document.getElementById('event-list');
+      list.replaceChildren(...data.events.map((event) => {
+        const card = document.createElement('article');
+        card.className = 'event-card'; card.dataset.category = event.category;
+        const date = new Date(event.eventDate);
+        const dateEl = document.createElement('div'); dateEl.className = 'event-date';
+        const day = document.createElement('strong'); day.textContent = date.getDate();
+        const month = document.createElement('span'); month.textContent = date.toLocaleDateString('en', { month: 'short' });
+        dateEl.append(day, month);
+        const info = document.createElement('div'); info.className = 'event-info';
+        const title = document.createElement('h3'); title.textContent = event.title;
+        const description = document.createElement('p'); description.textContent = event.description || '';
+        info.append(title, description); card.append(dateEl, info);
+        const tag = document.createElement('span'); tag.className = `tag tag-${event.category}`; tag.textContent = event.category;
+        card.append(tag); return card;
+      }));
+    }
+    if (Array.isArray(data.mediaUpdates) && data.mediaUpdates.length) {
+      const mediaList = document.getElementById('media-updates-list');
+      const fallbackCards = [...mediaList.children];
+      const updates = data.mediaUpdates.filter((update) =>
+        typeof update.mediaUrl === 'string' &&
+        (typeof update.mediaType === 'string' &&
+          (update.mediaType.startsWith('image/') || update.mediaType.startsWith('video/')))
+      );
+      if (updates.length) {
+        mediaList.replaceChildren(...updates.map((update) => {
+          const card = document.createElement('article');
+          card.className = 'reel-card';
+          const thumb = document.createElement('div');
+          thumb.className = 'reel-thumb';
+          let media;
+          if (update.mediaType.startsWith('video/')) {
+            media = document.createElement('video');
+            media.controls = true; media.preload = 'metadata';
+            media.setAttribute('aria-label', update.title);
+          } else {
+            media = document.createElement('img');
+            media.loading = 'lazy'; media.alt = update.title;
+          }
+          media.src = update.mediaUrl;
+          thumb.append(media);
+          const info = document.createElement('div');
+          info.className = 'reel-info';
+          const title = document.createElement('h3'); title.textContent = update.title;
+          const body = document.createElement('span'); body.textContent = update.body || 'GNAAS CCTU update';
+          info.append(title, body);
+          card.append(thumb, info);
+          return card;
+        }));
+      } else {
+        // Keep the authored reels when records are malformed or unsupported.
+        mediaList.replaceChildren(...fallbackCards);
+      }
+    }
+  } catch (error) {
+    // Static HTML remains the fallback when Pages Functions or D1 is unavailable.
+  }
+}
 
-/* ---------- 9. Smooth scroll reveal animations ---------- */
+loadChapterContent();
+
+
+/* ---------- 10. Smooth scroll reveal animations ---------- */
 const revealElements = document.querySelectorAll('.section, .latest-card, .schedule-grid, .about-grid, .ministry-grid, .media-row, .live-grid, .video-grid, .resource-row, .team-carousel, .prayer-form, .prayer-list, .give-options, .alumni-inner');
 revealElements.forEach((element) => {
   element.classList.add('reveal-on-scroll');
@@ -529,4 +614,3 @@ if (document.readyState === 'loading') {
 } else {
   initSlideshow();
 }
-

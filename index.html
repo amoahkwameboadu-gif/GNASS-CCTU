@@ -83,7 +83,7 @@
     <section class="countdown-strip" aria-label="Sabbath countdown">
       <div class="countdown-inner">
         <div class="countdown-label">
-          <span id="countdown-status">Sabbath begins in Ghana time</span>
+          <span id="countdown-status">Sabbath begins in</span>
         </div>
         <div class="countdown-clock" id="countdown-clock" aria-live="polite">
           <div class="clock-unit"><span id="cd-days">00</span><small>days</small></div>
@@ -99,16 +99,16 @@
       <div class="container">
         <div class="latest-card">
           <div class="latest-thumb">
-            <video controls preload="metadata" aria-label="GNAAS Congress 2026 video">
+            <video id="latest-media" controls preload="metadata" aria-label="Latest GNAAS message video">
               <source src="sermons%20and%20events/congress.mp4" type="video/mp4" />
               Your browser does not support local video playback.
             </video>
           </div>
           <div class="latest-info">
             <p class="eyebrow">Latest Message</p>
-            <h2>GNAAS Congress 2026</h2>
-            <p class="sermon-title">One Week.🌝 One Purpose.🪢 One Flame🔥</p>
-            <p>Be present to witness this year's GNAAS Congress. Sept. 20-27 | St. Monica's College, Asante Mampong. Register Now🤗: http://congress.gnaas.org ©️GNAAS NATIONAL 2026</p>
+            <h2 id="latest-title">GNAAS Congress 2026</h2>
+            <p class="sermon-title" id="latest-summary">One Week.🌝 One Purpose.🪢 One Flame🔥</p>
+            <p id="latest-body">Be present to witness this year's GNAAS Congress. Sept. 20-27 | St. Monica's College, Asante Mampong. Register Now🤗: http://congress.gnaas.org ©️GNAAS NATIONAL 2026</p>
           </div>
         </div>
       </div>
@@ -217,7 +217,7 @@
         <p class="section-sub">Explore our latest media highlights, featured announcements, and community reels below.</p>
 
         <!-- Reels horizontal scroll (YouTube Shorts style) -->
-        <div class="reels-row" tabindex="0" aria-label="Community reels, scroll horizontally">
+        <div class="reels-row" id="media-updates-list" tabindex="0" aria-label="Community reels, scroll horizontally">
           <!-- Reel 1: Event Highlights Slideshow -->
           <article class="reel-card" id="event-highlights-reel">
             <div class="reel-thumb slideshow-container" aria-label="Event Highlights slideshow">
@@ -369,7 +369,7 @@
           <button class="filter-btn" data-filter="sports" type="button">Sports</button>
         </div>
 
-        <div class="event-list">
+        <div class="event-list" id="event-list">
           <article class="event-card" data-category="worship">
             <div class="event-date"><strong>14</strong><span>Sep</span></div>
             <div class="event-info"><h3>Week of Spiritual Emphasis</h3><p>Five nights of revival — 6:30 PM, Main Auditorium.</p></div>
@@ -519,6 +519,7 @@
         <a href="#">Instagram</a>
         <a href="#">Facebook</a>
         <a class="whatsapp-footer-link" href="https://chat.whatsapp.com/LS0VLLXvTgcCGrgi6CJksS" target="_blank" rel="noopener noreferrer">GNAAS CCTU COMMUNITY</a>
+        <a href="admin.html">Admin portal</a>
       </div>
     </div>
     <p class="footer-copy">© <span id="year"></span> GNAAS CCTU Chapter. <strong>Builders for Christ</strong>.</p>

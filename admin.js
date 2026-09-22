@@ -1,5 +1,4 @@
 const statusEl = document.getElementById('admin-status');
-const portalLock = document.getElementById('portal-lock');
 const dashboard = document.getElementById('dashboard');
 const setStatus = (message, error = false) => {
   statusEl.textContent = message;
@@ -53,7 +52,6 @@ function renderMediaUpdates(updates) {
 
 async function loadDashboard() {
   const data = await api('admin/content');
-  portalLock.hidden = true;
   dashboard.hidden = false;
   if (data.latestMessage) {
     document.getElementById('message-title').value = data.latestMessage.title;
@@ -62,21 +60,6 @@ async function loadDashboard() {
   renderEvents(data.events);
   renderMediaUpdates(data.mediaUpdates);
 }
-
-async function unlockAdminPortal() {
-  try {
-    await api('auth/login', {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ password: document.getElementById('portal-password').value })
-    });
-    await loadDashboard();
-    setStatus('Admin portal unlocked.');
-  } catch (error) {
-    setStatus('Incorrect password. The admin portal remains locked.', true);
-  }
-}
-
 document.getElementById('message-form').addEventListener('submit', async (event) => {
   event.preventDefault();
   try {
@@ -127,7 +110,6 @@ document.getElementById('event-form').addEventListener('submit', async (event) =
   } catch (error) { setStatus(error.message, true); }
 });
 
-document.getElementById('unlock-form').addEventListener('submit', (event) => {
-  event.preventDefault();
-  unlockAdminPortal();
+loadDashboard().catch((error) => {
+  setStatus(error.message, true);
 });

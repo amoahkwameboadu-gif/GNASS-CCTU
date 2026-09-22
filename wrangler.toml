@@ -1,9 +1,0 @@
-name = "gnaascctu"
-compatibility_date = "2026-08-29"
-pages_build_output_dir = "."
-
-[[d1_databases]]
-binding = "DB"
-database_name = "gnaas-content"
-database_id = "e5cbfa4e-3e9a-4eeb-b2df-32bbd603d396"
-migrations_dir = "migrations"

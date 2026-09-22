@@ -13,17 +13,11 @@ The hero collage uses public-domain pioneer portraits hosted by [Wikimedia Commo
 Just double-click `index.html` — no server or install needed. The static content is retained
 as a fallback when the Pages API is unavailable.
 
-## Cloudflare Pages admin portal
-The site includes `admin.html` and Pages Functions under `functions/api/`. Latest messages,
-calendar events, and independently publishable Media/reel updates are stored in Cloudflare D1;
-uploaded images and videos are stored in R2. Before deploying:
-
-1. Create the D1 database and R2 bucket, then replace `database_id` in `wrangler.toml`.
-2. Run `npx wrangler d1 migrations apply gnaas-content --remote`.
-3. Set the secret (never put it in JavaScript): `npx wrangler pages secret put ADMIN_PASSWORD`.
-4. Deploy with `npx wrangler pages deploy .`.
-
-The admin session is an HTTP-only, Secure, SameSite cookie and expires after eight hours.
+## Admin portal
+`admin.html` (with `admin.js` + `admin.css`) is a static content-editing page. It is included as-is
+so the admin UI is present for local use; the API-backed save/publish flows require the Cloudflare
+Functions stack and are not available on Vercel. Protect `/admin.html` with a firewall rule or
+authentication layer if you expose it publicly. Just open it — no login section is required.
 
 ## Still needs real content or a backend
 These were part of the brief but need more than plain HTML/CSS/JS to work for real:

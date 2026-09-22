@@ -6,7 +6,6 @@
 .admin-panel label { display: grid; gap: .3rem; font-weight: 600; }
 .admin-panel input, .admin-panel textarea, .admin-panel select { width: 100%; padding: .7rem; border: 1px solid var(--line); border-radius: 6px; background: var(--paper); color: var(--ink); }
 .admin-event { display: flex; justify-content: space-between; gap: 1rem; padding: .8rem 0; border-bottom: 1px solid var(--line); }
-.admin-event button, #logout { color: var(--royal); text-decoration: underline; }
+.admin-event button { color: var(--royal); text-decoration: underline; }
 .admin-panel h2:not(:first-child) { margin-top: 1rem; }
 #admin-status[data-error="true"] { color: #a40000; }
-.portal-lock { max-width: 32rem; }

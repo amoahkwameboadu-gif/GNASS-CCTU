@@ -332,12 +332,16 @@ async function loadAnnFeed() {
 loadAnnFeed();
 setInterval(loadAnnFeed, 15 * 60 * 1000);
 
-/* ---------- 9. Cloudflare content (fallback-safe) ---------- */
+/* ---------- 9. Dynamic Content Loading (Vercel API) ---------- */
+// Fetches latest content from the public API and updates the page dynamically.
+// Runs on load and polls every 30 seconds for live updates.
 async function loadChapterContent() {
   try {
     const response = await fetch('/api/content', { headers: { Accept: 'application/json' } });
     if (!response.ok) return;
     const data = await response.json();
+    
+    // Update Latest Message section
     const message = data.latestMessage;
     if (message) {
       document.getElementById('latest-title').textContent = message.title;
@@ -354,6 +358,8 @@ async function loadChapterContent() {
         }
       }
     }
+    
+    // Update Events section
     if (Array.isArray(data.events) && data.events.length) {
       const list = document.getElementById('event-list');
       list.replaceChildren(...data.events.map((event) => {
@@ -372,6 +378,8 @@ async function loadChapterContent() {
         card.append(tag); return card;
       }));
     }
+    
+    // Update Media/Reels section
     if (Array.isArray(data.mediaUpdates) && data.mediaUpdates.length) {
       const mediaList = document.getElementById('media-updates-list');
       const fallbackCards = [...mediaList.children];
@@ -411,11 +419,15 @@ async function loadChapterContent() {
       }
     }
   } catch (error) {
-    // Static HTML remains the fallback when Pages Functions or D1 is unavailable.
+    console.warn('Content load failed, using static fallback:', error);
   }
 }
 
+// Initial load
 loadChapterContent();
+
+// Auto-refresh every 30 seconds for live updates
+setInterval(loadChapterContent, 30 * 1000);
 
 
 /* ---------- 10. Smooth scroll reveal animations ---------- */

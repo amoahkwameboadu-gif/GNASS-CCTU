@@ -12,9 +12,10 @@
     <header class="admin-header">
       <a href="index.html" class="back-link">← Public site</a>
       <h1>Chapter admin</h1>
-      <div id="sync-indicator" class="sync-indicator" title="Sync status">
-        <span class="sync-dot"></span><span>Checking…</span>
-      </div>
+<div id="sync-indicator" class="sync-indicator" title="Sync status" role="status" aria-live="polite">
+      <span class="sync-dot"></span><span>Checking…</span>
+      <button id="sync-retry" class="sync-retry" type="button" title="Retry sync" aria-label="Retry sync" style="display:none;">⟳</button>
+    </div>
     </header>
     <p id="admin-status" role="status" aria-live="polite"></p>
     

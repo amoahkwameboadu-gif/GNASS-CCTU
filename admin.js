@@ -46,18 +46,50 @@ function dismissToast(toast) {
   toast.addEventListener('transitionend', () => toast.remove(), { once: true });
 }
 
-// Sync status indicator
-function setSyncStatus(status) {
+// Sync status indicator with detailed error reporting
+function setSyncStatus(status, errorDetails = null) {
   if (!syncIndicator) return;
   syncIndicator.className = 'sync-indicator';
   syncIndicator.dataset.status = status;
-  const labels = {
-    'synced': '✓ Synced',
-    'syncing': '⟳ Syncing…',
-    'pending': '⏳ Pending',
-    'error': '✕ Sync failed'
-  };
-  syncIndicator.innerHTML = `<span class="sync-dot"></span><span>${labels[status] || status}</span>`;
+  
+  let label = '';
+  let detailHtml = '';
+  
+  if (status === 'synced') {
+    label = '✓ Synced';
+  } else if (status === 'syncing') {
+    label = '⟳ Syncing…';
+  } else if (status === 'pending') {
+    label = '⏳ Pending';
+  } else if (status === 'error') {
+    label = '✕ Sync failed';
+    if (errorDetails) {
+      detailHtml = `<button class="sync-error-detail" aria-label="Show error details">Details</button>
+        <div class="sync-error-tooltip">${escapeHtml(errorDetails)}</div>`;
+    }
+  }
+  
+  syncIndicator.innerHTML = `<span class="sync-dot"></span><span>${label}</span>${detailHtml}`;
+  
+  // Add click handler for error details
+  if (errorDetails) {
+    const detailBtn = syncIndicator.querySelector('.sync-error-detail');
+    const tooltip = syncIndicator.querySelector('.sync-error-tooltip');
+    if (detailBtn && tooltip) {
+      detailBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        tooltip.classList.toggle('show');
+      });
+      // Close on outside click
+      document.addEventListener('click', () => tooltip.classList.remove('show'), { once: true });
+    }
+  }
+}
+
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
 }
 
 function setStatus(message, error = false) {
@@ -336,16 +368,56 @@ document.addEventListener('keydown', (e) => {
   }
 });
 
-// Sync status polling
+// Sync status polling with detailed error reporting
 function startSyncPolling() {
-  setInterval(async () => {
+  let consecutiveFailures = 0;
+  const retryBtn = document.getElementById('sync-retry');
+  
+  async function checkSync() {
     try {
       const res = await fetch('/api/content', { method: 'HEAD', cache: 'no-cache' });
-      setSyncStatus(res.ok ? 'synced' : 'error');
-    } catch {
-      setSyncStatus('error');
+      if (res.ok) {
+        setSyncStatus('synced');
+        consecutiveFailures = 0;
+        if (retryBtn) retryBtn.style.display = 'none';
+      } else {
+        let errorDetail = `HTTP ${res.status}`;
+        try {
+          const errorData = await res.json();
+          if (errorData.error) errorDetail += `: ${errorData.error}`;
+        } catch {}
+        consecutiveFailures++;
+        setSyncStatus('error', `Sync check failed: ${errorDetail} (failure ${consecutiveFailures}/3)`);
+        if (retryBtn) retryBtn.style.display = 'inline-flex';
+        
+        if (consecutiveFailures >= 3) {
+          showToast(`Sync failing: ${errorDetail}. Check Vercel deployment & env vars.`, 'error', 8000);
+        }
+      }
+    } catch (err) {
+      consecutiveFailures++;
+      const errorMsg = err.message || 'Network error';
+      setSyncStatus('error', `Network error: ${errorMsg} (failure ${consecutiveFailures}/3)`);
+      if (retryBtn) retryBtn.style.display = 'inline-flex';
+      if (consecutiveFailures >= 3) {
+        showToast(`Sync network error: ${errorMsg}. Check Vercel deployment & network.`, 'error', 8000);
+      }
     }
-  }, 10000);
+  }
+  
+  // Manual retry handler
+  if (retryBtn) {
+    retryBtn.addEventListener('click', () => {
+      retryBtn.style.display = 'none';
+      checkSync();
+    });
+  }
+  
+  // Initial check
+  checkSync();
+  
+  // Poll every 10 seconds
+  setInterval(checkSync, 10000);
 }
 
 // Main initialization

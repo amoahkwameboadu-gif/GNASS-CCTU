@@ -1,0 +1,28 @@
+{
+  "version": 2,
+  "framework": null,
+  "buildCommand": "echo 'Static site - no build'",
+  "outputDirectory": ".",
+  "devCommand": "vercel dev",
+  "installCommand": "npm install",
+  "regions": ["iad1"],
+  "functions": {
+    "api/**/*.ts": {
+      "maxDuration": 30
+    }
+  },
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "X-Frame-Options", "value": "DENY" },
+        { "key": "X-XSS-Protection", "value": "1; mode=block" }
+      ]
+    }
+  ],
+  "rewrites": [
+    { "source": "/admin.html", "destination": "/admin.html" },
+    { "source": "/api/admin/(.*)", "destination": "/api/admin/$1" }
+  ]
+}

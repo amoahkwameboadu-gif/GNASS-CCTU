@@ -1,0 +1,17 @@
+{
+  "name": "gnaas-cctu-admin",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "vercel dev",
+    "build": "echo 'Static site - no build step'",
+    "deploy": "vercel --prod"
+  },
+  "dependencies": {
+    "@octokit/rest": "^20.0.0"
+  },
+  "devDependencies": {
+    "@vercel/node": "^3.0.0",
+    "typescript": "^5.0.0"
+  }
+}

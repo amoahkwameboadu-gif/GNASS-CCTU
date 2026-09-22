@@ -1,5 +1,5 @@
 const statusEl = document.getElementById('admin-status');
-const loginPanel = document.getElementById('login-panel');
+const portalLock = document.getElementById('portal-lock');
 const dashboard = document.getElementById('dashboard');
 const setStatus = (message, error = false) => {
   statusEl.textContent = message;
@@ -53,7 +53,8 @@ function renderMediaUpdates(updates) {
 
 async function loadDashboard() {
   const data = await api('admin/content');
-  loginPanel.hidden = true; dashboard.hidden = false;
+  portalLock.hidden = true;
+  dashboard.hidden = false;
   if (data.latestMessage) {
     document.getElementById('message-title').value = data.latestMessage.title;
     document.getElementById('message-body').value = data.latestMessage.body;
@@ -62,18 +63,19 @@ async function loadDashboard() {
   renderMediaUpdates(data.mediaUpdates);
 }
 
-document.getElementById('login-form').addEventListener('submit', async (event) => {
-  event.preventDefault();
+async function unlockAdminPortal() {
   try {
-    await api('auth/login', { method: 'POST', headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ password: document.getElementById('password').value }) });
-    await loadDashboard(); setStatus('Signed in.');
-  } catch (error) { setStatus(error.message, true); }
-});
-
-document.getElementById('logout').addEventListener('click', async () => {
-  await api('auth/logout', { method: 'POST' }); dashboard.hidden = true; loginPanel.hidden = false; setStatus('Signed out.');
-});
+    await api('auth/login', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ password: document.getElementById('portal-password').value })
+    });
+    await loadDashboard();
+    setStatus('Admin portal unlocked.');
+  } catch (error) {
+    setStatus('Incorrect password. The admin portal remains locked.', true);
+  }
+}
 
 document.getElementById('message-form').addEventListener('submit', async (event) => {
   event.preventDefault();
@@ -125,7 +127,7 @@ document.getElementById('event-form').addEventListener('submit', async (event) =
   } catch (error) { setStatus(error.message, true); }
 });
 
-loadDashboard().catch((error) => {
-  if (error.message === 'Unauthorized') setStatus('Enter the admin password to continue.');
-  else setStatus(error.message, true);
+document.getElementById('unlock-form').addEventListener('submit', (event) => {
+  event.preventDefault();
+  unlockAdminPortal();
 });

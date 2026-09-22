@@ -12,15 +12,15 @@
     <a href="index.html">← Public site</a>
     <h1>Chapter admin</h1>
     <p id="admin-status" role="status"></p>
-    <section id="login-panel" class="admin-panel">
-      <h2>Sign in</h2>
-      <form id="login-form">
-        <label>Password <input id="password" type="password" autocomplete="current-password" required /></label>
-        <button class="btn btn-primary" type="submit">Sign in</button>
+    <section id="portal-lock" class="admin-panel portal-lock">
+      <h2>Admin portal locked</h2>
+      <p>Enter the portal password to manage site content.</p>
+      <form id="unlock-form">
+        <label>Password <input id="portal-password" type="password" autocomplete="current-password" required /></label>
+        <button class="btn btn-primary" type="submit">Unlock portal</button>
       </form>
     </section>
     <section id="dashboard" class="admin-panel" hidden>
-      <button id="logout" type="button">Sign out</button>
       <h2>Latest message</h2>
       <form id="message-form">
         <label>Title <input id="message-title" required maxlength="180" /></label>

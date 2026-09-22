@@ -9,3 +9,4 @@
 .admin-event button, #logout { color: var(--royal); text-decoration: underline; }
 .admin-panel h2:not(:first-child) { margin-top: 1rem; }
 #admin-status[data-error="true"] { color: #a40000; }
+.portal-lock { max-width: 32rem; }

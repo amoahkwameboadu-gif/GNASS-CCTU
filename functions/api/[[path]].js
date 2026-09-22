@@ -61,6 +61,7 @@ async function publicContent(env) {
 }
 
 async function handleMedia(request, env, key) {
+  if (!env.MEDIA) return new Response('Media storage is not enabled', { status: 503 });
   const object = await env.MEDIA.get(key);
   if (!object) return new Response('Not found', { status: 404 });
   const headers = new Headers();
@@ -145,6 +146,9 @@ export async function onRequest(context) {
       return json(await publicContent(env));
     }
     if (path === 'admin/media' && request.method === 'POST') {
+      if (!env.MEDIA) {
+        return json({ error: 'Media uploads are temporarily unavailable. Enable Cloudflare R2 for this site.' }, { status: 503 });
+      }
       const form = await request.formData();
       const file = form.get('file');
       if (!(file instanceof File) || !ALLOWED_MEDIA.has(file.type) || file.size > MAX_UPLOAD_BYTES) {

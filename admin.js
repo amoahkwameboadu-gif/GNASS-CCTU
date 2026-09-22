@@ -42,7 +42,9 @@ function renderMediaUpdates(updates) {
       try {
         const data = await api(`admin/media-updates/${update.id}`, { method: 'DELETE' });
         renderMediaUpdates(data.mediaUpdates);
-      } catch (error) { setStatus(error.message, true); }
+      } catch (error) {
+        setStatus(error.message, true);
+      }
     });
     item.append(remove);
     return item;

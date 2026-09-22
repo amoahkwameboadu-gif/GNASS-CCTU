@@ -141,7 +141,7 @@ function tickCountdown() {
   // Sabbath lasts roughly 24 hours. Once we're inside that window, diff goes
   // negative and we say "Sabbath is here".
   if (diff <= 0 && diff > -24 * 60 * 60 * 1000) {
-    statusEl.textContent = 'Sabbath is here — enjoy the rest';
+    statusEl.textContent = 'Sabbath is here — enjoy the rest (Ghana time)';
     dEl.textContent = hEl.textContent = mEl.textContent = sEl.textContent = '00';
     return;
   }
@@ -152,7 +152,7 @@ function tickCountdown() {
   const mins = Math.floor((diff / (1000 * 60)) % 60);
   const secs = Math.floor((diff / 1000) % 60);
 
-  statusEl.textContent = 'Sabbath begins in';
+  statusEl.textContent = 'Sabbath begins in Ghana time';
   dEl.textContent = pad(days);
   hEl.textContent = pad(hours);
   mEl.textContent = pad(mins);
@@ -529,5 +529,4 @@ if (document.readyState === 'loading') {
 } else {
   initSlideshow();
 }
-
 

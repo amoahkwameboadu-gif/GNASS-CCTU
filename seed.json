@@ -1,0 +1,46 @@
+{
+  "$comment": "Seed content. Dates are rebuilt each year from month/day so the calendar stays 'upcoming'.",
+  "latestMessage": null,
+  "events": [
+    {
+      "id": "seed-s1",
+      "month": 8,
+      "day": 14,
+      "category": "worship",
+      "title": "Week of Spiritual Emphasis",
+      "description": "Five nights of revival — 6:30 PM, Main Auditorium."
+    },
+    {
+      "id": "seed-s2",
+      "month": 8,
+      "day": 21,
+      "category": "social",
+      "title": "Chapter Social Night",
+      "description": "Games, food and fellowship — 5:00 PM, Student Square."
+    },
+    {
+      "id": "seed-s3",
+      "month": 8,
+      "day": 28,
+      "category": "outreach",
+      "title": "Community Health Outreach",
+      "description": "Free screenings and Bible literature — 8:00 AM, Town Center."
+    },
+    {
+      "id": "seed-s4",
+      "month": 9,
+      "day": 5,
+      "category": "sports",
+      "title": "Inter-Chapter Football",
+      "description": "GNAAS CCTU vs. GNAAS UCC — 3:00 PM, Sports Pitch."
+    },
+    {
+      "id": "seed-s5",
+      "month": 9,
+      "day": 18,
+      "category": "worship",
+      "title": "Choir Rehearsal",
+      "description": "Open rehearsal, new voices welcome — 6:00 PM, Chapel."
+    }
+  ]
+}

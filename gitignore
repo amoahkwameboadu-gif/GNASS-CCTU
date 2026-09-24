@@ -1,0 +1,10 @@
+node_modules/
+dist/
+
+# Chapter content written at runtime by server/index.mjs
+data/
+
+# Local env files (GNAAS_ADMIN_TOKEN, KV/Blob tokens…)
+.env
+.env.local
+.vercel

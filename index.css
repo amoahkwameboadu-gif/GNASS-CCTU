@@ -1,0 +1,16 @@
+/*
+ * Tailwind CSS: theme + utilities only.
+ * Preflight (Tailwind's base reset) is intentionally NOT imported so the
+ * original GNAAS CCTU stylesheet renders exactly like the live site
+ * (e.g. headings keep the browser's default bold weight).
+ */
+@layer theme, base, components, utilities;
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
+
+/* The untouched original files are kept for reference only — don't scan them. */
+@source not "../original-site";
+@source not "../README.md";
+
+/* Original site stylesheet — ported verbatim from style.css */
+@import "./styles/site.css";

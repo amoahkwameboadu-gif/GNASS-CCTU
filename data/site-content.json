@@ -1,0 +1,42 @@
+{
+  "latestMessage": {
+    "title": "GNAAS Congress 2026",
+    "body": "One Week.🌝 One Purpose.🪢 One Flame🔥\n\nBe present to witness this year's GNAAS Congress. Sept. 20-27 | St. Monica's College, Asante Mampong. Register Now🤗: http://congress.gnaas.org ©️GNAAS NATIONAL 2026",
+    "mediaUrl": "sermons and events/congress.mp4",
+    "mediaType": "video/mp4",
+    "updatedAt": "2026-09-22T00:00:00.000Z"
+  },
+  "events": [
+    { "id": 1, "title": "Week of Spiritual Emphasis", "description": "Five nights of revival — 6:30 PM, Main Auditorium.", "eventDate": "2026-09-14", "category": "worship" },
+    { "id": 2, "title": "Chapter Social Night", "description": "Games, food and fellowship — 5:00 PM, Student Square.", "eventDate": "2026-09-21", "category": "social" },
+    { "id": 3, "title": "Community Health Outreach", "description": "Free screenings and Bible literature — 8:00 AM, Town Center.", "eventDate": "2026-09-28", "category": "outreach" },
+    { "id": 4, "title": "Inter-Chapter Football", "description": "GNAAS CCTU vs. GNAAS UCC — 3:00 PM, Sports Pitch.", "eventDate": "2026-10-05", "category": "sports" },
+    { "id": 5, "title": "Choir Rehearsal", "description": "Open rehearsal, new voices welcome — 6:00 PM, Chapel.", "eventDate": "2026-10-18", "category": "worship" }
+  ],
+  "mediaUpdates": [
+    {
+      "id": 1,
+      "title": "Event Highlights",
+      "body": "Recent chapter events and activities",
+      "mediaUrl": "images/slideshows/IMG-20260114-WA0023.jpg",
+      "mediaType": "image/jpeg",
+      "createdAt": "2026-09-22T00:00:00.000Z"
+    },
+    {
+      "id": 2,
+      "title": "Church Dues & Welfare",
+      "body": "Support our chapter",
+      "mediaUrl": "sermons and events/CHURCH DUES 2.png",
+      "mediaType": "image/png",
+      "createdAt": "2026-09-22T00:00:00.000Z"
+    },
+    {
+      "id": 3,
+      "title": "Virtual Prayer Meeting",
+      "body": "Join us live",
+      "mediaUrl": "sermons and events/prayer meeting.jpg",
+      "mediaType": "image/jpeg",
+      "createdAt": "2026-09-22T00:00:00.000Z"
+    }
+  ]
+}

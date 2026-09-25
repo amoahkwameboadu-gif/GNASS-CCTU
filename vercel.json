@@ -1,15 +1,9 @@
 {
   "version": 2,
-  "framework": null,
   "buildCommand": "echo 'Static site - no build step' && exit 0",
   "outputDirectory": ".",
   "devCommand": "vercel dev",
   "installCommand": "npm install",
-  "functions": {
-    "api/**/*.ts": {
-      "maxDuration": 30
-    }
-  },
   "headers": [
     {
       "source": "/api/(.*)",
@@ -18,9 +12,5 @@
         { "key": "Cache-Control", "value": "no-store" }
       ]
     }
-  ],
-  "rewrites": [
-    { "source": "/admin.html", "destination": "/admin.html" },
-    { "source": "/api/admin/(.*)", "destination": "/api/admin/$1" }
   ]
 }

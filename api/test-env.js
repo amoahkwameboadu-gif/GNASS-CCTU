@@ -1,7 +1,5 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node'
-
-export default async function handler(req: VercelRequest, res: VercelResponse) {
-  // Minimal test - no imports, no external deps
+// Minimal test endpoint - JavaScript version
+module.exports = async function handler(req, res) {
   res.setHeader('Content-Type', 'application/json');
   return res.status(200).json({
     status: 'ok',

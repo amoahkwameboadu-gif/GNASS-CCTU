@@ -12,14 +12,25 @@
     <header class="admin-header">
       <a href="index.html" class="back-link">← Public site</a>
       <h1>Chapter admin</h1>
+      <button id="admin-signout" class="btn btn-primary" type="button" hidden>Sign out</button>
 <div id="sync-indicator" class="sync-indicator" title="Sync status" role="status" aria-live="polite">
       <span class="sync-dot"></span><span>Checking…</span>
       <button id="sync-retry" class="sync-retry" type="button" title="Retry sync" aria-label="Retry sync" style="display:none;">⟳</button>
     </div>
     </header>
     <p id="admin-status" role="status" aria-live="polite"></p>
-    
-    <section id="dashboard" class="admin-panel">
+
+    <form id="admin-login-form" class="admin-panel admin-login" autocomplete="off">
+      <h2>Admin sign in</h2>
+      <div class="form-group">
+        <label for="admin-token">Admin access token</label>
+        <input id="admin-token" type="password" required autocomplete="current-password" />
+      </div>
+      <p id="admin-login-message" class="field-hint" role="status" aria-live="polite"></p>
+      <button class="btn btn-primary" type="submit">Sign in</button>
+    </form>
+
+    <section id="dashboard" class="admin-panel" hidden>
       <header class="panel-header">
         <h2>Latest message</h2>
         <span class="panel-hint">Appears on homepage hero section</span>

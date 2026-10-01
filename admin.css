@@ -3,6 +3,10 @@
    Interactive, engaging admin portal styles
    ========================================================================== */
 
+[hidden] {
+  display: none !important;
+}
+
 .admin-shell { 
   width: min(100% - 2rem, 900px); 
   margin: 2rem auto; 
@@ -40,6 +44,7 @@
   font-weight: 500;
   display: none;
 }
+#admin-status:empty { display: none; }
 #admin-status[data-error="true"] { 
   display: block; 
   background: #fee2e2; 
@@ -152,6 +157,13 @@
   padding: 1.5rem; 
   margin-bottom: 1.5rem;
 }
+
+.admin-login {
+  display: grid;
+  gap: 1.25rem;
+  max-width: 540px;
+}
+.admin-login h2 { margin: 0; }
 
 .panel-header {
   display: flex;

@@ -1,10 +1,12 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
 import { readJSON, writeJSON, type ChapterContent } from '../../lib/github-storage'
+import { requireAdmin } from '../../lib/admin-auth'
 
 const CONTENT_PATH = 'data/site-content.json'
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method === 'OPTIONS') return res.status(200).end()
+  if (!requireAdmin(req, res)) return
   if (req.method !== 'DELETE') return res.status(405).json({ error: 'Method not allowed' })
 
   try {

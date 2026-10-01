@@ -86,7 +86,9 @@ scripts/export-html.sh       # regenerate the single-file download
   here; the code is still in `src/lib/downloadSite.ts` if you want it back — import `downloadSiteHtml` and call it.)
 - Scroll-reveal animations (respects `prefers-reduced-motion`).
 
-**Admin portal (`#/admin`)** — deliberately minimal
+**Admin portal (`admin.html`)** — deliberately minimal
+- Sign-in using the admin token configured by the site owner; the token is held
+  in session storage and cleared when the browser tab session ends.
 - Three panels: *Latest message*, *Media update*, *Calendar event* — write, publish, and delete from the list below each.
 - A small badge in the header: **Live** (API connected) or **Saved in this browser**.
 - Drag-and-drop uploads with type/size validation (JPEG, PNG, WebP, GIF, MP4, WebM, MOV — max 4 MB for Vercel) and preview.
@@ -142,15 +144,20 @@ repository's `main` branch. Configure these environment variables in Vercel:
    `amoahkwameboadu-gif/GNASS-CCTU` with **Contents: read and write** permission.
    Keep this value only in Vercel's encrypted environment settings; never put it
    in browser code or commit it.
-2. `GITHUB_REPO_OWNER`, `GITHUB_REPO_NAME`, and `GITHUB_BRANCH` — optional;
+2. `GNAAS_ADMIN_TOKEN` — required. Generate a separate high-entropy password
+   for the admin portal. Enter this same value in the portal's sign-in form;
+   it is kept in session storage only.
+3. `GITHUB_REPO_OWNER`, `GITHUB_REPO_NAME`, and `GITHUB_BRANCH` — optional;
    they default to `amoahkwameboadu-gif`, `GNASS-CCTU`, and `main`.
-3. Redeploy after setting or changing environment variables.
+4. Redeploy after setting or changing environment variables.
 
-Without `GITHUB_TOKEN`, the API responds with a configuration error and the
-admin portal cannot load or publish shared content. Writes create commits to `data/site-content.json`, so the token needs write
-permission. Uploaded media is committed separately under `uploads/` and served
-from the repository's raw-content URL. Vercel limits function request bodies to about 4.5 MB, so the portal caps files
-at 4 MB to leave room for multipart form data.
+Without either required token, the API responds with a configuration error and
+the admin portal cannot load or publish shared content. Admin routes require the
+admin token, while public content remains readable without it. Writes create
+commits to `data/site-content.json`, so the GitHub token needs write permission.
+Uploaded media is committed separately under `uploads/` and served from the
+repository's raw-content URL. Vercel limits function request bodies to about
+4.5 MB, so the portal caps files at 4 MB to leave room for multipart form data.
 
 | Endpoint | Methods |
 | --- | --- |

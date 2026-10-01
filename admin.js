@@ -6,17 +6,29 @@
 const statusEl = document.getElementById('admin-status');
 const dashboard = document.getElementById('dashboard');
 const syncIndicator = document.getElementById('sync-indicator');
+const loginForm = document.getElementById('admin-login-form');
+const loginToken = document.getElementById('admin-token');
+const loginMessage = document.getElementById('admin-login-message');
+const signoutButton = document.getElementById('admin-signout');
+const ADMIN_TOKEN_KEY = 'gnaas-admin-token';
+let dashboardInitialized = false;
 
 // Toast notification system
 function showToast(message, type = 'info', duration = 4000) {
   const container = document.getElementById('toast-container') || createToastContainer();
   const toast = document.createElement('div');
   toast.className = `toast toast-${type}`;
-  toast.innerHTML = `
-    <span class="toast-icon">${type === 'success' ? '✓' : type === 'error' ? '✕' : 'ℹ'}</span>
-    <span class="toast-message">${message}</span>
-    <button class="toast-close" aria-label="Dismiss">&times;</button>
-  `;
+  const icon = document.createElement('span');
+  icon.className = 'toast-icon';
+  icon.textContent = type === 'success' ? '✓' : type === 'error' ? '✕' : 'ℹ';
+  const messageElement = document.createElement('span');
+  messageElement.className = 'toast-message';
+  messageElement.textContent = message;
+  const closeButton = document.createElement('button');
+  closeButton.className = 'toast-close';
+  closeButton.setAttribute('aria-label', 'Dismiss');
+  closeButton.textContent = '×';
+  toast.append(icon, messageElement, closeButton);
   container.appendChild(toast);
   
   // Animate in
@@ -25,7 +37,7 @@ function showToast(message, type = 'info', duration = 4000) {
   // Auto dismiss
   const timer = setTimeout(() => dismissToast(toast), duration);
   
-  toast.querySelector('.toast-close').addEventListener('click', () => {
+  closeButton.addEventListener('click', () => {
     clearTimeout(timer);
     dismissToast(toast);
   });
@@ -97,16 +109,37 @@ function setStatus(message, error = false) {
   showToast(message, error ? 'error' : 'success');
 }
 
+function getAdminToken() {
+  try {
+    return sessionStorage.getItem(ADMIN_TOKEN_KEY) || '';
+  } catch {
+    return '';
+  }
+}
+
+function showLogin(message = '') {
+  dashboard.hidden = true;
+  loginForm.hidden = false;
+  signoutButton.hidden = true;
+  loginMessage.textContent = message;
+  if (message) setSyncStatus('error', message);
+  else setSyncStatus('pending');
+}
+
 // API helper with loading state
 async function api(path, options = {}) {
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), 30000);
   
   try {
+    const headers = new Headers(options.headers || {});
+    const token = getAdminToken();
+    if (token) headers.set('Authorization', `Bearer ${token}`);
     const response = await fetch(`/api/${path}`, { 
       credentials: 'same-origin', 
       signal: controller.signal,
-      ...options 
+      ...options,
+      headers,
     });
     clearTimeout(timeoutId);
     const contentType = (response.headers.get('content-type') || '').toLowerCase();
@@ -114,7 +147,16 @@ async function api(path, options = {}) {
       throw new Error(`API request failed (HTTP ${response.status}). The server did not return JSON; check the Vercel function configuration and logs.`);
     }
     const data = await response.json();
-    if (!response.ok) throw new Error(data.error || `Request failed (HTTP ${response.status})`);
+    if (!response.ok) {
+      if (response.status === 401) {
+        try { sessionStorage.removeItem(ADMIN_TOKEN_KEY); } catch {}
+        loginToken.value = '';
+        showLogin(data.error || 'Admin access expired. Sign in again.');
+      }
+      const error = new Error(data.error || `Request failed (HTTP ${response.status})`);
+      error.status = response.status;
+      throw error;
+    }
     return data;
   } catch (error) {
     clearTimeout(timeoutId);
@@ -148,15 +190,19 @@ function renderEvents(events) {
   list.replaceChildren(...events.map((event) => {
     const item = document.createElement('article');
     item.className = 'admin-event';
-    item.innerHTML = `
-      <div class="event-info">
-        <time>${new Date(event.eventDate).toLocaleDateString('en-GB', { 
-          weekday: 'short', day: 'numeric', month: 'short' 
-        })}</time>
-        <strong>${event.title}</strong>
-        <span class="event-category">${event.category}</span>
-      </div>
-    `;
+    const info = document.createElement('div');
+    info.className = 'event-info';
+    const date = document.createElement('time');
+    date.textContent = new Date(event.eventDate).toLocaleDateString('en-GB', {
+      weekday: 'short', day: 'numeric', month: 'short',
+    });
+    const title = document.createElement('strong');
+    title.textContent = event.title;
+    const category = document.createElement('span');
+    category.className = 'event-category';
+    category.textContent = event.category;
+    info.append(date, title, category);
+    item.append(info);
     const remove = document.createElement('button');
     remove.type = 'button'; 
     remove.className = 'delete-btn';
@@ -182,12 +228,15 @@ function renderMediaUpdates(updates) {
   list.replaceChildren(...updates.map((update) => {
     const item = document.createElement('article');
     item.className = 'admin-event';
-    item.innerHTML = `
-      <div class="event-info">
-        <strong>${update.title}</strong>
-        <span class="event-category">${update.mediaType}</span>
-      </div>
-    `;
+    const info = document.createElement('div');
+    info.className = 'event-info';
+    const title = document.createElement('strong');
+    title.textContent = update.title;
+    const mediaType = document.createElement('span');
+    mediaType.className = 'event-category';
+    mediaType.textContent = update.mediaType;
+    info.append(title, mediaType);
+    item.append(info);
     const remove = document.createElement('button');
     remove.type = 'button'; 
     remove.className = 'delete-btn';
@@ -425,10 +474,17 @@ function startSyncPolling() {
 
 // Main initialization
 async function loadDashboard() {
+  if (!getAdminToken()) {
+    showLogin();
+    return;
+  }
+
   try {
     setSyncStatus('syncing');
     const data = await api('admin/content');
     dashboard.hidden = false;
+    loginForm.hidden = true;
+    signoutButton.hidden = false;
     setSyncStatus('synced');
     
     if (data.latestMessage) {
@@ -438,36 +494,66 @@ async function loadDashboard() {
     renderEvents(data.events || []);
     renderMediaUpdates(data.mediaUpdates || []);
     
-    // Restore drafts
-    setupAutoSave('message-form', ['message-title', 'message-body']);
-    setupAutoSave('media-update-form', ['media-update-title', 'media-update-body']);
-    setupAutoSave('event-form', ['event-title', 'event-description']);
-    
-    // Character counters
-    setupCharCounter('message-body', 5000);
-    setupCharCounter('media-update-body', 2000);
-    setupCharCounter('event-description', 1000);
-    
-    // Auto-expand textareas
-    document.querySelectorAll('textarea').forEach(setupAutoExpand);
-    
-    // File drop zones
-    setupFileDropZone('message-file', 'message-file-preview');
-    setupFileDropZone('media-update-file', 'media-update-file-preview');
-    
-    // Initialize form loading states
-    document.querySelectorAll('form').forEach(initFormLoading);
-    
-    // Start sync polling
-    startSyncPolling();
+    if (!dashboardInitialized) {
+      // Restore drafts
+      setupAutoSave('message-form', ['message-title', 'message-body']);
+      setupAutoSave('media-update-form', ['media-update-title', 'media-update-body']);
+      setupAutoSave('event-form', ['event-title', 'event-description']);
+
+      // Character counters
+      setupCharCounter('message-body', 5000);
+      setupCharCounter('media-update-body', 2000);
+      setupCharCounter('event-description', 1000);
+
+      // Auto-expand textareas
+      document.querySelectorAll('textarea').forEach(setupAutoExpand);
+
+      // File drop zones
+      setupFileDropZone('message-file', 'message-file-preview');
+      setupFileDropZone('media-update-file', 'media-update-file-preview');
+
+      // Initialize form loading states
+      document.querySelectorAll('#dashboard form').forEach(initFormLoading);
+
+      startSyncPolling();
+      dashboardInitialized = true;
+    }
     
     setSyncStatus('synced');
     showToast('Dashboard loaded', 'success');
   } catch (error) {
-    setSyncStatus('error');
-    showToast(error.message, 'error');
+    if (error.status === 401) {
+      showLogin(error.message);
+    } else {
+      loginForm.hidden = false;
+      loginMessage.textContent = error.message;
+      setSyncStatus('error', error.message);
+      showToast(error.message, 'error');
+    }
   }
 }
+
+loginForm.addEventListener('submit', async (event) => {
+  event.preventDefault();
+  const token = loginToken.value.trim();
+  if (!token) return;
+
+  try {
+    sessionStorage.setItem(ADMIN_TOKEN_KEY, token);
+  } catch {
+    loginMessage.textContent = 'This browser blocked session storage. Enable it to sign in.';
+    return;
+  }
+
+  loginMessage.textContent = 'Checking admin access…';
+  await loadDashboard();
+});
+
+signoutButton.addEventListener('click', () => {
+  try { sessionStorage.removeItem(ADMIN_TOKEN_KEY); } catch {}
+  loginToken.value = '';
+  showLogin('You have been signed out.');
+});
 
 // Form handlers with enhanced UX
 document.getElementById('message-form').addEventListener('submit', async (event) => {

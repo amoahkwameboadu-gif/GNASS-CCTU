@@ -2,7 +2,7 @@ import { useEffect, useState, type DragEvent, type ReactNode, type RefObject } f
 import type { ToastType } from './toast';
 
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'video/mp4', 'video/webm', 'video/quicktime'];
-const MAX_BYTES = 25 * 1024 * 1024; // 25 MB
+const MAX_BYTES = 4 * 1024 * 1024; // Keep multipart uploads under Vercel's request-body limit.
 
 const previewStyle = { maxWidth: '100%', maxHeight: '200px', borderRadius: '8px' };
 
@@ -45,9 +45,9 @@ export default function FileDropZone({
       return;
     }
 
-    // Check size (25MB)
+    // Keep uploads below Vercel's serverless request-body limit.
     if (file.size > MAX_BYTES) {
-      onToast('File too large. Maximum 25 MB.', 'error');
+      onToast('File too large. Maximum 4 MB.', 'error');
       input.value = '';
       return;
     }
@@ -88,7 +88,7 @@ export default function FileDropZone({
             <img src={preview.url} alt="Selected file preview" style={previewStyle} />
           ))}
       </div>
-      <p className="field-hint">Drag &amp; drop or click to select. Max 25 MB. JPEG, PNG, WebP, GIF, MP4, WebM, MOV.</p>
+      <p className="field-hint">Drag &amp; drop or click to select. Max 4 MB. JPEG, PNG, WebP, GIF, MP4, WebM, MOV.</p>
     </div>
   );
 }

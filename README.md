@@ -89,7 +89,7 @@ scripts/export-html.sh       # regenerate the single-file download
 **Admin portal (`#/admin`)** — deliberately minimal
 - Three panels: *Latest message*, *Media update*, *Calendar event* — write, publish, and delete from the list below each.
 - A small badge in the header: **Live** (API connected) or **Saved in this browser**.
-- Drag-and-drop uploads with type/size validation (JPEG, PNG, WebP, GIF, MP4, WebM, MOV — max 25 MB) and preview.
+- Drag-and-drop uploads with type/size validation (JPEG, PNG, WebP, GIF, MP4, WebM, MOV — max 4 MB for Vercel) and preview.
 - Toast confirmations, draft auto-save, character counters, auto-growing textareas,
   **Ctrl/Cmd + S** to save, loading spinners.
 
@@ -133,15 +133,24 @@ portal publishes to all visitors. Leave `GNAAS_ADMIN_TOKEN` unset and the API is
 like the original site; set it and admin writes must send it as a bearer token
 (remembered in the admin portal, entered once via the browser's storage — see below).
 
-### Option B — Vercel serverless functions (this repo is Vercel-ready)
+### Option B — Vercel serverless functions
 
-`vercel.json` + the `api/` folder give you durable hosting on Vercel:
+The `api/` functions store the public content in `data/site-content.json` on this
+repository's `main` branch. Configure these environment variables in Vercel:
 
-1. Import the repo into Vercel (framework: Vite; build `npm run build`, output `dist`).
-2. Add a **KV / Upstash Redis** store to the project (env: `KV_REST_API_URL` + `KV_REST_API_TOKEN`,
-   or `UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN`) — this holds the text content.
-3. Add a **Blob** store (env: `BLOB_READ_WRITE_TOKEN`) — this holds uploaded images/videos.
-4. Optional: set `GNAAS_ADMIN_TOKEN` to protect admin writes.
+1. `GITHUB_TOKEN` — required. Use a fine-grained GitHub token scoped to
+   `amoahkwameboadu-gif/GNASS-CCTU` with **Contents: read and write** permission.
+   Keep this value only in Vercel's encrypted environment settings; never put it
+   in browser code or commit it.
+2. `GITHUB_REPO_OWNER`, `GITHUB_REPO_NAME`, and `GITHUB_BRANCH` — optional;
+   they default to `amoahkwameboadu-gif`, `GNASS-CCTU`, and `main`.
+3. Redeploy after setting or changing environment variables.
+
+Without `GITHUB_TOKEN`, the API responds with a configuration error and the
+admin portal cannot load or publish shared content. Writes create commits to `data/site-content.json`, so the token needs write
+permission. Uploaded media is committed separately under `uploads/` and served
+from the repository's raw-content URL. Vercel limits function request bodies to about 4.5 MB, so the portal caps files
+at 4 MB to leave room for multipart form data.
 
 | Endpoint | Methods |
 | --- | --- |
@@ -149,9 +158,10 @@ like the original site; set it and admin writes must send it as a bearer token
 | `/api/health` | GET — a plain readiness/status report |
 | `/api/admin/content` | GET, PUT — load dashboard / publish latest message |
 | `/api/admin/media` | POST — upload image or video (`FormData` field `file`) |
-| `/api/admin/media-updates[/:id]` | POST, DELETE — reels |
-| `/api/admin/events[/:id]` | POST, DELETE — calendar |
-| `/api/media/:name` | GET — uploaded files (Node server only) |
+| `/api/admin/media-updates` | POST — publish a reel |
+| `/api/admin/media-updates/:id` | DELETE — delete a reel |
+| `/api/admin/events` | POST — add a calendar event |
+| `/api/admin/events/:id` | DELETE — delete a calendar event |
 
 ### Option C — one HTML file, no backend
 

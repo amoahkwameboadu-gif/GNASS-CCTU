@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
-import { readJSON, writeJSON } from '../lib/github-storage'
+import { readJSON, writeJSON, type ChapterContent } from '../lib/github-storage'
 
 const CONTENT_PATH = 'data/site-content.json'
 
@@ -22,15 +22,30 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     if (req.method === 'PUT') {
-      const { latestMessage, events, mediaUpdates } = req.body
-      const current = await readJSON(CONTENT_PATH, { latestMessage: null, events: [], mediaUpdates: [] })
-      
-      const updated = {
-        latestMessage: latestMessage ?? current.latestMessage,
-        events: events ?? current.events,
-        mediaUpdates: mediaUpdates ?? current.mediaUpdates,
+      const body = req.body ?? {}
+      const current = await readJSON<ChapterContent>(CONTENT_PATH, { latestMessage: null, events: [], mediaUpdates: [] })
+      const latestMessage = body.latestMessage ?? (
+        typeof body.title === 'string' && typeof body.body === 'string'
+          ? {
+              title: body.title.trim(),
+              body: body.body.trim(),
+              mediaUrl: typeof body.mediaUrl === 'string' && body.mediaUrl ? body.mediaUrl : current.latestMessage?.mediaUrl,
+              mediaType: typeof body.mediaType === 'string' && body.mediaType ? body.mediaType : current.latestMessage?.mediaType,
+              updatedAt: new Date().toISOString(),
+            }
+          : current.latestMessage
+      )
+      if (!latestMessage?.title || !latestMessage?.body) {
+        return res.status(400).json({ error: 'Both a title and a body are required.' })
       }
-      
+
+      const updated = {
+        ...current,
+        latestMessage,
+        events: body.events ?? current.events,
+        mediaUpdates: body.mediaUpdates ?? current.mediaUpdates,
+      }
+
       await writeJSON(CONTENT_PATH, updated, 'Update site content via admin portal')
       return res.status(200).json(updated)
     }

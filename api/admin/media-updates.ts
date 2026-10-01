@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
-import { readJSON, writeJSON } from '../../lib/github-storage'
+import { readJSON, writeJSON, type ChapterContent } from '../lib/github-storage'
 
 const CONTENT_PATH = 'data/site-content.json'
 const ALLOWED_MEDIA = new Set([
@@ -7,8 +7,8 @@ const ALLOWED_MEDIA = new Set([
   'video/mp4', 'video/webm', 'video/quicktime'
 ])
 
-function generateId(updates: any[]): number {
-  return updates.length > 0 ? Math.max(...updates.map(u => u.id)) + 1 : 1
+function generateId(updates: Array<{ id: number | string }>): number {
+  return updates.length > 0 ? Math.max(...updates.map((update) => Number(update.id) || 0)) + 1 : 1
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -20,15 +20,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method === 'OPTIONS') return res.status(200).end()
 
   try {
-    const data = await readJSON(CONTENT_PATH, { latestMessage: null, events: [], mediaUpdates: [] })
+    const data = await readJSON<ChapterContent>(CONTENT_PATH, { latestMessage: null, events: [], mediaUpdates: [] })
     const mediaUpdates = data.mediaUpdates || []
 
     if (req.method === 'GET') {
-      return res.status(200).json(mediaUpdates)
+      return res.status(200).json(data)
     }
 
     if (req.method === 'POST') {
-      const { title, body, mediaUrl, mediaType } = req.body
+      const { title, body, mediaUrl, mediaType } = req.body ?? {}
       if (!title || !mediaUrl || !mediaType || !ALLOWED_MEDIA.has(mediaType)) {
         return res.status(400).json({ error: 'Title and a valid image or video are required' })
       }
@@ -40,19 +40,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         mediaType: String(mediaType),
         createdAt: new Date().toISOString(),
       }
-      const updated = [...mediaUpdates, newUpdate]
-      await writeJSON(CONTENT_PATH, { ...data, mediaUpdates: updated }, `Publish media update: ${newUpdate.title}`)
-      return res.status(200).json(updated)
-    }
-
-    if (req.method === 'DELETE') {
-      const url = new URL(req.url!, `http://${req.headers.host}`)
-      const id = Number(url.pathname.split('/').pop())
-      if (!Number.isInteger(id)) {
-        return res.status(400).json({ error: 'Invalid media update id' })
-      }
-      const updated = mediaUpdates.filter(u => u.id !== id)
-      await writeJSON(CONTENT_PATH, { ...data, mediaUpdates: updated }, `Delete media update ${id}`)
+      const updated = { ...data, mediaUpdates: [...mediaUpdates, newUpdate] }
+      await writeJSON(CONTENT_PATH, updated, `Publish media update: ${newUpdate.title}`)
       return res.status(200).json(updated)
     }
 

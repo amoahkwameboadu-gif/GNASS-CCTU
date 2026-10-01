@@ -1,12 +1,56 @@
+import { randomUUID } from 'node:crypto'
 import type { VercelRequest, VercelResponse } from '@vercel/node'
-import { readJSON, writeJSON } from '../../lib/github-storage'
+import { publicFileUrl, writeBinaryFile } from '../../lib/github-storage'
 
-const CONTENT_PATH = 'data/site-content.json'
 const ALLOWED_MEDIA = new Set([
   'image/jpeg', 'image/png', 'image/webp', 'image/gif',
   'video/mp4', 'video/webm', 'video/quicktime'
 ])
-const MAX_SIZE = 25 * 1024 * 1024 // 25 MB
+const MEDIA_EXTENSIONS: Record<string, string> = {
+  'image/jpeg': 'jpg',
+  'image/png': 'png',
+  'image/webp': 'webp',
+  'image/gif': 'gif',
+  'video/mp4': 'mp4',
+  'video/webm': 'webm',
+  'video/quicktime': 'mov',
+}
+const MAX_SIZE = 4 * 1024 * 1024 // keep multipart requests below Vercel's body limit
+
+export const config = { api: { bodyParser: false } }
+
+class UploadTooLargeError extends Error {}
+
+async function readUpload(req: VercelRequest): Promise<{ type: string; data: Buffer } | null> {
+  const contentType = req.headers['content-type'] || ''
+  const boundary = contentType.match(/boundary=(?:"([^"]+)"|([^;]+))/i)?.slice(1).find(Boolean)?.trim()
+  if (!boundary) return null
+
+  const chunks: Buffer[] = []
+  let totalSize = 0
+  for await (const chunk of req) {
+    const buffer = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk)
+    totalSize += buffer.length
+    if (totalSize > MAX_SIZE + 128 * 1024) {
+      throw new UploadTooLargeError('Upload is too large. Maximum file size is 4 MB.')
+    }
+    chunks.push(buffer)
+  }
+
+  const parts = Buffer.concat(chunks).toString('latin1').split(`--${boundary}`)
+  for (const part of parts) {
+    const headerEnd = part.indexOf('\r\n\r\n')
+    if (headerEnd < 0) continue
+    const headers = part.slice(0, headerEnd)
+    if (!/content-disposition:[^\r\n]*\bname="file"/i.test(headers)) continue
+
+    const payload = part.slice(headerEnd + 4).replace(/\r\n$/, '')
+    const type = headers.match(/content-type:\s*([^\r\n]+)/i)?.[1]?.trim()
+    if (!type) return null
+    return { type, data: Buffer.from(payload, 'latin1') }
+  }
+  return null
+}
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   res.setHeader('Access-Control-Allow-Credentials', 'true')
@@ -21,37 +65,27 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    // Vercel provides body as parsed form data when using multipart
-    const formData = req.body as any
-    const file = formData?.file
-    
+    const file = await readUpload(req)
     if (!file) {
-      return res.status(400).json({ error: 'No file provided' })
+      return res.status(400).json({ error: 'No valid file was provided in the "file" upload field.' })
     }
 
-    // Check file type
-    const mimeType = file.type || file.mimetype
+    const mimeType = file.type
     if (!mimeType || !ALLOWED_MEDIA.has(mimeType)) {
       return res.status(400).json({ error: 'Unsupported file type' })
     }
 
-    // Check file size (Vercel parses as base64 string)
-    const base64Data = file.data || file.buffer
-    if (!base64Data) {
-      return res.status(400).json({ error: 'Invalid file data' })
-    }
-    
-    const size = Buffer.from(base64Data, 'base64').length
-    if (size > MAX_SIZE) {
-      return res.status(400).json({ error: 'File is larger than 25 MB' })
+    if (file.data.length > MAX_SIZE) {
+      return res.status(400).json({ error: 'File is larger than 4 MB' })
     }
 
-    // Store as base64 data URL (for demo; in production use Vercel Blob or external storage)
-    const dataUrl = `data:${mimeType};base64,${base64Data}`
-    
-    return res.status(200).json({ url: dataUrl, type: mimeType })
+    const fileName = `${randomUUID()}.${MEDIA_EXTENSIONS[mimeType]}`
+    const path = `uploads/${fileName}`
+    await writeBinaryFile(path, file.data, `Upload chapter media ${fileName}`)
+    return res.status(200).json({ url: publicFileUrl(path), type: mimeType })
   } catch (error: any) {
     console.error('Admin media upload error:', error)
-    return res.status(500).json({ error: error.message || 'Server error' })
+    const status = error instanceof UploadTooLargeError ? 413 : 500
+    return res.status(status).json({ error: error instanceof Error ? error.message : 'Upload failed' })
   }
 }

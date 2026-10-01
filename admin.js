@@ -53,7 +53,6 @@ function setSyncStatus(status, errorDetails = null) {
   syncIndicator.dataset.status = status;
   
   let label = '';
-  let detailHtml = '';
   
   if (status === 'synced') {
     label = '✓ Synced';
@@ -63,33 +62,33 @@ function setSyncStatus(status, errorDetails = null) {
     label = '⏳ Pending';
   } else if (status === 'error') {
     label = '✕ Sync failed';
-    if (errorDetails) {
-      detailHtml = `<button class="sync-error-detail" aria-label="Show error details">Details</button>
-        <div class="sync-error-tooltip">${escapeHtml(errorDetails)}</div>`;
-    }
   }
-  
-  syncIndicator.innerHTML = `<span class="sync-dot"></span><span>${label}</span>${detailHtml}`;
-  
-  // Add click handler for error details
-  if (errorDetails) {
-    const detailBtn = syncIndicator.querySelector('.sync-error-detail');
-    const tooltip = syncIndicator.querySelector('.sync-error-tooltip');
-    if (detailBtn && tooltip) {
-      detailBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        tooltip.classList.toggle('show');
-      });
-      // Close on outside click
-      document.addEventListener('click', () => tooltip.classList.remove('show'), { once: true });
-    }
-  }
-}
 
-function escapeHtml(text) {
-  const div = document.createElement('div');
-  div.textContent = text;
-  return div.innerHTML;
+  const retryButton = syncIndicator.querySelector('#sync-retry');
+  const dot = document.createElement('span');
+  dot.className = 'sync-dot';
+  const labelElement = document.createElement('span');
+  labelElement.textContent = label;
+  syncIndicator.replaceChildren(dot, labelElement);
+
+  if (errorDetails) {
+    const detailButton = document.createElement('button');
+    detailButton.className = 'sync-error-detail';
+    detailButton.type = 'button';
+    detailButton.setAttribute('aria-label', 'Show error details');
+    detailButton.textContent = 'Details';
+    const tooltip = document.createElement('div');
+    tooltip.className = 'sync-error-tooltip';
+    tooltip.textContent = errorDetails;
+    detailButton.addEventListener('click', (event) => {
+      event.stopPropagation();
+      tooltip.classList.toggle('show');
+    });
+    document.addEventListener('click', () => tooltip.classList.remove('show'), { once: true });
+    syncIndicator.append(detailButton, tooltip);
+  }
+
+  if (retryButton) syncIndicator.append(retryButton);
 }
 
 function setStatus(message, error = false) {
@@ -110,8 +109,12 @@ async function api(path, options = {}) {
       ...options 
     });
     clearTimeout(timeoutId);
-    const data = await response.json().catch(() => ({}));
-    if (!response.ok) throw new Error(data.error || 'Request failed');
+    const contentType = (response.headers.get('content-type') || '').toLowerCase();
+    if (!contentType.includes('application/json')) {
+      throw new Error(`API request failed (HTTP ${response.status}). The server did not return JSON; check the Vercel function configuration and logs.`);
+    }
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || `Request failed (HTTP ${response.status})`);
     return data;
   } catch (error) {
     clearTimeout(timeoutId);
@@ -162,8 +165,8 @@ function renderEvents(events) {
     remove.addEventListener('click', async () => {
       if (!confirm(`Delete "${event.title}"?`)) return;
       try { 
-        const data = await api(`admin/events/${event.id}`, { method: 'DELETE' }); 
-        renderEvents(data.events); 
+            const data = await api(`admin/events/${event.id}`, { method: 'DELETE' });
+            renderEvents(data.events || []);
         showToast('Event deleted', 'success');
       } catch (error) { 
         showToast(error.message, 'error'); 
@@ -194,7 +197,7 @@ function renderMediaUpdates(updates) {
       if (!confirm(`Delete "${update.title}"?`)) return;
       try { 
         const data = await api(`admin/media-updates/${update.id}`, { method: 'DELETE' }); 
-        renderMediaUpdates(data.mediaUpdates); 
+        renderMediaUpdates(data.mediaUpdates || []);
         showToast('Media update deleted', 'success');
       } catch (error) { 
         showToast(error.message, 'error'); 
@@ -249,9 +252,9 @@ function setupFileDropZone(inputId, previewId) {
       return;
     }
     
-    // Check size (25MB)
-    if (file.size > 25 * 1024 * 1024) {
-      showToast('File too large. Maximum 25 MB.', 'error');
+    // Keep uploads below Vercel's serverless request-body limit.
+    if (file.size > 4 * 1024 * 1024) {
+      showToast('File too large. Maximum 4 MB.', 'error');
       input.value = '';
       return;
     }
@@ -375,7 +378,7 @@ function startSyncPolling() {
   
   async function checkSync() {
     try {
-      const res = await fetch('/api/content', { method: 'HEAD', cache: 'no-cache' });
+      const res = await fetch('/api/content', { method: 'HEAD', cache: 'no-store' });
       if (res.ok) {
         setSyncStatus('synced');
         consecutiveFailures = 0;
@@ -489,8 +492,8 @@ document.getElementById('message-form').addEventListener('submit', async (event)
         mediaUrl, mediaType 
       }) 
     });
-    renderEvents(data.events); 
-    renderMediaUpdates(data.mediaUpdates); 
+    renderEvents(data.events || []);
+    renderMediaUpdates(data.mediaUpdates || []);
     showToast('✓ Message saved and published to main site', 'success');
     setSyncStatus('synced');
   } catch (error) { 
@@ -521,7 +524,7 @@ document.getElementById('media-update-form').addEventListener('submit', async (e
         mediaUrl: uploaded.url, mediaType: uploaded.type
       })
     });
-    renderMediaUpdates(data.mediaUpdates);
+    renderMediaUpdates(data.mediaUpdates || []);
     form.reset();
     document.getElementById('media-update-file-preview').innerHTML = '';
     document.getElementById('media-update-file-preview').style.display = 'none';
@@ -551,7 +554,7 @@ document.getElementById('event-form').addEventListener('submit', async (event) =
         category: document.getElementById('event-category').value 
       }) 
     });
-    renderEvents(data.events); 
+    renderEvents(data.events || []);
     form.reset(); 
     showToast('✓ Event added to main site calendar', 'success');
     setSyncStatus('synced');

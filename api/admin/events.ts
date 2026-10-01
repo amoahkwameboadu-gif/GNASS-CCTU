@@ -1,10 +1,10 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
-import { readJSON, writeJSON } from '../../lib/github-storage'
+import { readJSON, writeJSON, type ChapterContent } from '../lib/github-storage'
 
 const CONTENT_PATH = 'data/site-content.json'
 
-function generateId(events: any[]): number {
-  return events.length > 0 ? Math.max(...events.map(e => e.id)) + 1 : 1
+function generateId(events: Array<{ id: number | string }>): number {
+  return events.length > 0 ? Math.max(...events.map((event) => Number(event.id) || 0)) + 1 : 1
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -16,15 +16,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method === 'OPTIONS') return res.status(200).end()
 
   try {
-    const data = await readJSON(CONTENT_PATH, { latestMessage: null, events: [], mediaUpdates: [] })
+    const data = await readJSON<ChapterContent>(CONTENT_PATH, { latestMessage: null, events: [], mediaUpdates: [] })
     const events = data.events || []
 
     if (req.method === 'GET') {
-      return res.status(200).json(events)
+      return res.status(200).json(data)
     }
 
     if (req.method === 'POST') {
-      const { title, description, eventDate, category } = req.body
+      const { title, description, eventDate, category } = req.body ?? {}
       if (!title || !eventDate) {
         return res.status(400).json({ error: 'Title and date are required' })
       }
@@ -35,20 +35,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         eventDate: String(eventDate).slice(0, 40),
         category: String(category || 'worship').slice(0, 30),
       }
-      const updatedEvents = [...events, newEvent]
-      await writeJSON(CONTENT_PATH, { ...data, events: updatedEvents }, `Add event: ${newEvent.title}`)
-      return res.status(200).json(updatedEvents)
-    }
-
-    if (req.method === 'DELETE') {
-      const url = new URL(req.url!, `http://${req.headers.host}`)
-      const id = Number(url.pathname.split('/').pop())
-      if (!Number.isInteger(id)) {
-        return res.status(400).json({ error: 'Invalid event id' })
-      }
-      const updatedEvents = events.filter(e => e.id !== id)
-      await writeJSON(CONTENT_PATH, { ...data, events: updatedEvents }, `Delete event ${id}`)
-      return res.status(200).json(updatedEvents)
+      const updated = { ...data, events: [...events, newEvent] }
+      await writeJSON(CONTENT_PATH, updated, `Add event: ${newEvent.title}`)
+      return res.status(200).json(updated)
     }
 
     return res.status(405).json({ error: 'Method not allowed' })

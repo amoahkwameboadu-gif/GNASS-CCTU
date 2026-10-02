@@ -1,7 +1,10 @@
 {
   "version": 2,
-  "buildCommand": "echo 'Static site - no build step' && exit 0",
   "outputDirectory": ".",
+  "functions": {
+    "api/**/*.ts": { "runtime": "@vercel/node@3" },
+    "api/**/*.js": { "runtime": "@vercel/node@3" }
+  },
   "headers": [
     {
       "source": "/api/(.*)",

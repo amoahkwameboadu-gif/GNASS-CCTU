@@ -156,6 +156,11 @@ repository's `main` branch. Configure these environment variables in Vercel:
 
 ### Admin accounts
 
+> **Vercel counts every file under `api/` as a serverless function**, including helper
+> modules, and the Hobby plan caps that at 12. Shared code therefore lives in `lib/` at the
+> repository root, not in `api/lib/`. Adding a new `api/**` file costs you a slot — this
+> project currently ships 10 routes, leaving 2 spare.
+
 The admin portal uses real accounts rather than a single shared password:
 
 - Anyone can create an account at `/admin.html` while `ALLOW_SIGNUP` is on.

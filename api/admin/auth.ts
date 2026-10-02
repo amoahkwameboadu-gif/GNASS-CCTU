@@ -1,14 +1,14 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
-import { currentUser } from '../lib/admin-auth'
-import { endSession, sessionConfigured, startSession } from '../lib/session'
-import { passwordProblem } from '../lib/password'
+import { currentUser } from '../../lib/admin-auth'
+import { endSession, sessionConfigured, startSession } from '../../lib/session'
+import { passwordProblem } from '../../lib/password'
 import {
   authenticate,
   createUser,
   publicUser,
   recordLogin,
   usernameProblem,
-} from '../lib/users'
+} from '../../lib/users'
 
 export function signupAllowed(): boolean {
   const flag = String(process.env.ALLOW_SIGNUP ?? 'true').trim().toLowerCase()

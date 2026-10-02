@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
-import { readJSON } from './lib/github-storage'
+import { readJSON } from '../lib/github-storage'
 
 const CONTENT_PATH = 'data/site-content.json'
 

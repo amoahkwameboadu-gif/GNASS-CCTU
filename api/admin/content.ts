@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
-import { readJSON, writeJSON, type ChapterContent } from '../lib/github-storage'
-import { requireAdmin } from '../lib/admin-auth'
+import { readJSON, writeJSON, type ChapterContent } from '../../lib/github-storage'
+import { requireAdmin } from '../../lib/admin-auth'
 
 const CONTENT_PATH = 'data/site-content.json'
 

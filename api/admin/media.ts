@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto'
 import type { VercelRequest, VercelResponse } from '@vercel/node'
-import { publicFileUrl, writeBinaryFile } from '../lib/github-storage'
-import { requireAdmin } from '../lib/admin-auth'
+import { publicFileUrl, writeBinaryFile } from '../../lib/github-storage'
+import { requireAdmin } from '../../lib/admin-auth'
 
 const ALLOWED_MEDIA = new Set([
   'image/jpeg', 'image/png', 'image/webp', 'image/gif',

@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
-import { requireAdmin, currentUser } from '../lib/admin-auth'
-import { passwordProblem } from '../lib/password'
+import { requireAdmin, currentUser } from '../../lib/admin-auth'
+import { passwordProblem } from '../../lib/password'
 import {
   countOwners,
   createUser,
@@ -10,7 +10,7 @@ import {
   removeUser,
   usernameProblem,
   type AdminRole,
-} from '../lib/users'
+} from '../../lib/users'
 
 async function handler(req: VercelRequest, res: VercelResponse) {
   res.setHeader('Access-Control-Allow-Origin', '*')

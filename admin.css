@@ -530,3 +530,19 @@
   .toast-container { left: 1rem; right: 1rem; bottom: 1rem; }
   .toast { min-width: 0; max-width: none; }
 }
+
+/* Account sign-in / sign-up */
+.auth-actions { display: grid; gap: .75rem; margin-top: 1rem; }
+.auth-switch {
+  background: none;
+  border: 0;
+  padding: .35rem .25rem;
+  color: var(--muted, #6b7280);
+  font: inherit;
+  font-size: .85rem;
+  text-align: left;
+  text-decoration: underline;
+  cursor: pointer;
+}
+.auth-switch:hover { color: var(--accent, #b8860b); }
+.admin-identity { font-size: .85rem; color: var(--muted, #6b7280); }

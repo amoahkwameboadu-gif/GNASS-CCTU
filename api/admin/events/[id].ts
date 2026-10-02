@@ -4,9 +4,9 @@ import { requireAdmin } from '../../lib/admin-auth'
 
 const CONTENT_PATH = 'data/site-content.json'
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method === 'OPTIONS') return res.status(200).end()
-  if (!requireAdmin(req, res)) return
+  if (!(await requireAdmin(req, res))) return
   if (req.method !== 'DELETE') return res.status(405).json({ error: 'Method not allowed' })
 
   try {
@@ -27,3 +27,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(500).json({ error: error instanceof Error ? error.message : 'Server error' })
   }
 }
+
+export default handler
+module.exports = handler
+module.exports.default = handler
+

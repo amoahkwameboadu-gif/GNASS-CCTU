@@ -4,14 +4,14 @@ import { requireAdmin } from '../lib/admin-auth'
 
 const CONTENT_PATH = 'data/site-content.json'
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+async function handler(req: VercelRequest, res: VercelResponse) {
   res.setHeader('Access-Control-Allow-Credentials', 'true')
   res.setHeader('Access-Control-Allow-Origin', '*')
   res.setHeader('Access-Control-Allow-Methods', 'GET,PUT,OPTIONS')
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization')
 
   if (req.method === 'OPTIONS') return res.status(200).end()
-  if (!requireAdmin(req, res)) return
+  if (!(await requireAdmin(req, res))) return
 
   try {
     if (req.method === 'GET') {
@@ -58,3 +58,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(500).json({ error: error.message || 'Server error' })
   }
 }
+export default handler
+module.exports = handler
+module.exports.default = handler
+

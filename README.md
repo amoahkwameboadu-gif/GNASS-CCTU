@@ -128,12 +128,12 @@ Environment variables:
 | `HOST` | `0.0.0.0` | interface to bind |
 | `GNAAS_DATA_DIR` | `./data` | where `content.json` + `uploads/` live |
 | `GNAAS_DIST_DIR` | `./dist` | the built site to serve |
-| `GNAAS_ADMIN_TOKEN` | *(unset)* | optional password required by `/api/admin/*` |
+| `SESSION_SECRET` | *(unset)* | signs admin session cookies; falls back to `GITHUB_TOKEN` |
+| `ALLOW_SIGNUP` | `true` | set `false` to close public account creation |
 
 Deploy it anywhere Node runs (Render, Railway, Fly.io, a VPS, `pm2`, Docker) and the admin
-portal publishes to all visitors. Leave `GNAAS_ADMIN_TOKEN` unset and the API is open, exactly
-like the original site; set it and admin writes must send it as a bearer token
-(remembered in the admin portal, entered once via the browser's storage — see below).
+portal publishes to all visitors. Admin routes require a signed-in account; public content
+stays readable without one (see below).
 
 ### Option B — Vercel serverless functions
 
@@ -144,17 +144,37 @@ repository's `main` branch. Configure these environment variables in Vercel:
    `amoahkwameboadu-gif/GNASS-CCTU` with **Contents: read and write** permission.
    Keep this value only in Vercel's encrypted environment settings; never put it
    in browser code or commit it.
-2. `GNAAS_ADMIN_TOKEN` — required. Generate a separate high-entropy password
-   for the admin portal. Enter this same value in the portal's sign-in form;
-   it is kept in session storage only.
-3. `GITHUB_REPO_OWNER`, `GITHUB_REPO_NAME`, and `GITHUB_BRANCH` — optional;
+2. `SESSION_SECRET` — recommended. A long random string used to sign admin session
+   cookies. If you leave it unset, the app falls back to signing with
+   `GITHUB_TOKEN`, which works but ties your sessions to one secret.
+3. `ALLOW_SIGNUP` — optional, defaults to `true`. Set it to `false` to close public
+   account creation; signed-in editors can then still add accounts from
+   `/api/admin/users`.
+4. `GITHUB_REPO_OWNER`, `GITHUB_REPO_NAME`, and `GITHUB_BRANCH` — optional;
    they default to `amoahkwameboadu-gif`, `GNASS-CCTU`, and `main`.
-4. Redeploy after setting or changing environment variables.
+5. Redeploy after setting or changing environment variables.
 
-Without either required token, the API responds with a configuration error and
-the admin portal cannot load or publish shared content. Admin routes require the
-admin token, while public content remains readable without it. Writes create
-commits to `data/site-content.json`, so the GitHub token needs write permission.
+### Admin accounts
+
+The admin portal uses real accounts rather than a single shared password:
+
+- Anyone can create an account at `/admin.html` while `ALLOW_SIGNUP` is on.
+- **The first account created becomes the `owner`**; later accounts are `editors`.
+- Passwords are hashed with `scrypt` and a per-user random salt. Only the hash and
+  salt are stored — in `data/admin-users.json` on this repo's `main` branch.
+- Signing in sets an `HttpOnly`, `SameSite=Lax` cookie holding a signed, 7-day
+  session. Nothing is kept in browser storage, so closing the browser ends nothing
+  but the cookie still expires on its own.
+- `/api/admin/users` lists accounts, and lets any signed-in editor add or remove
+  them (an owner cannot be deleted if it is the last one).
+
+Because sign-ups are open by default, anyone who finds `/admin.html` can edit the
+site. Set `ALLOW_SIGNUP=false` once your team accounts exist.
+
+Without `GITHUB_TOKEN` and `SESSION_SECRET`, the admin API responds with a
+configuration error and the portal cannot load or publish shared content. Public
+content remains readable without signing in. Writes create commits to
+`data/site-content.json`, so the GitHub token needs write permission.
 Uploaded media is committed separately under `uploads/` and served from the
 repository's raw-content URL. Vercel limits function request bodies to about
 4.5 MB, so the portal caps files at 4 MB to leave room for multipart form data.
@@ -169,6 +189,8 @@ repository's raw-content URL. Vercel limits function request bodies to about
 | `/api/admin/media-updates/:id` | DELETE — delete a reel |
 | `/api/admin/events` | POST — add a calendar event |
 | `/api/admin/events/:id` | DELETE — delete a calendar event |
+| `/api/admin/auth` | GET, POST — `login`, `register`, `logout` |
+| `/api/admin/users` | GET, POST, DELETE — manage editor accounts |
 
 ### Option C — one HTML file, no backend
 
@@ -202,7 +224,7 @@ If you ever need to point the site elsewhere without editing code, set either of
 | Key | Example |
 | --- | --- |
 | `gnaas-api-base` | `https://my-api.onrender.com/api` |
-| `gnaas-api-token` | the value of `GNAAS_ADMIN_TOKEN` on the server |
+| `gnaas-api-token` | *no longer used* — the portal signs in with an account and relies on its session cookie |
 
 ## Assets
 

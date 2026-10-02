@@ -12,14 +12,14 @@ function generateId(updates: Array<{ id: number | string }>): number {
   return updates.length > 0 ? Math.max(...updates.map((update) => Number(update.id) || 0)) + 1 : 1
 }
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+async function handler(req: VercelRequest, res: VercelResponse) {
   res.setHeader('Access-Control-Allow-Credentials', 'true')
   res.setHeader('Access-Control-Allow-Origin', '*')
   res.setHeader('Access-Control-Allow-Methods', 'GET,POST,DELETE,OPTIONS')
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization')
 
   if (req.method === 'OPTIONS') return res.status(200).end()
-  if (!requireAdmin(req, res)) return
+  if (!(await requireAdmin(req, res))) return
 
   try {
     const data = await readJSON<ChapterContent>(CONTENT_PATH, { latestMessage: null, events: [], mediaUpdates: [] })
@@ -53,3 +53,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(500).json({ error: error.message || 'Server error' })
   }
 }
+export default handler
+module.exports = handler
+module.exports.default = handler
+

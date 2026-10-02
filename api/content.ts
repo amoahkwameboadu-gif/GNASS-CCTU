@@ -3,7 +3,7 @@ import { readJSON } from './lib/github-storage'
 
 const CONTENT_PATH = 'data/site-content.json'
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+async function handler(req: VercelRequest, res: VercelResponse) {
   res.setHeader('Access-Control-Allow-Credentials', 'true')
   res.setHeader('Access-Control-Allow-Origin', '*')
   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS')
@@ -32,3 +32,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(500).json({ error: error.message || 'Server error' })
   }
 }
+export default handler
+module.exports = handler
+module.exports.default = handler
+

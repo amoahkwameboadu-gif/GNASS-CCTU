@@ -7,11 +7,37 @@ const statusEl = document.getElementById('admin-status');
 const dashboard = document.getElementById('dashboard');
 const syncIndicator = document.getElementById('sync-indicator');
 const loginForm = document.getElementById('admin-login-form');
-const loginToken = document.getElementById('admin-token');
 const loginMessage = document.getElementById('admin-login-message');
 const signoutButton = document.getElementById('admin-signout');
-const ADMIN_TOKEN_KEY = 'gnaas-admin-token';
+const usernameInput = document.getElementById('admin-username');
+const passwordInput = document.getElementById('admin-password');
+const submitButton = document.getElementById('admin-submit');
+const modeToggle = document.getElementById('admin-mode-toggle');
+const authHeading = document.getElementById('admin-auth-heading');
+const authHint = document.getElementById('admin-auth-hint');
 let dashboardInitialized = false;
+let authMode = 'login';
+let currentUser = null;
+
+function applyAuthMode() {
+  const registering = authMode === 'register';
+  if (authHeading) authHeading.textContent = registering ? 'Create your account' : 'Admin sign in';
+  if (authHint) {
+    authHint.textContent = registering
+      ? 'Pick a username and password. You will be signed in right away.'
+      : 'Chapter editors sign in here to update the public site.';
+  }
+  if (submitButton) submitButton.textContent = registering ? 'Create account' : 'Sign in';
+  if (modeToggle) {
+    modeToggle.textContent = registering
+      ? 'Already have an account? Sign in'
+      : 'New here? Create an account';
+  }
+  if (passwordInput) {
+    passwordInput.autocomplete = registering ? 'new-password' : 'current-password';
+    passwordInput.placeholder = registering ? 'At least 8 characters' : 'Your password';
+  }
+}
 
 // Toast notification system
 function showToast(message, type = 'info', duration = 4000) {
@@ -109,21 +135,25 @@ function setStatus(message, error = false) {
   showToast(message, error ? 'error' : 'success');
 }
 
-function getAdminToken() {
-  try {
-    return sessionStorage.getItem(ADMIN_TOKEN_KEY) || '';
-  } catch {
-    return '';
-  }
-}
-
 function showLogin(message = '') {
   dashboard.hidden = true;
   loginForm.hidden = false;
   signoutButton.hidden = true;
+  currentUser = null;
+  if (usernameInput) usernameInput.disabled = false;
+  if (passwordInput) passwordInput.value = '';
   loginMessage.textContent = message;
   if (message) setSyncStatus('error', message);
   else setSyncStatus('pending');
+}
+
+function showDashboardFor(user) {
+  currentUser = user;
+  loginMessage.textContent = '';
+  if (usernameInput) usernameInput.disabled = true;
+  setSyncStatus('synced');
+  const identity = document.getElementById('admin-identity');
+  if (identity) identity.textContent = user ? `Signed in as ${user.username}` : '';
 }
 
 // API helper with loading state
@@ -133,10 +163,8 @@ async function api(path, options = {}) {
   
   try {
     const headers = new Headers(options.headers || {});
-    const token = getAdminToken();
-    if (token) headers.set('Authorization', `Bearer ${token}`);
-    const response = await fetch(`/api/${path}`, { 
-      credentials: 'same-origin', 
+    const response = await fetch(`/api/${path}`, {
+      credentials: 'same-origin',
       signal: controller.signal,
       ...options,
       headers,
@@ -149,9 +177,7 @@ async function api(path, options = {}) {
     const data = await response.json();
     if (!response.ok) {
       if (response.status === 401) {
-        try { sessionStorage.removeItem(ADMIN_TOKEN_KEY); } catch {}
-        loginToken.value = '';
-        showLogin(data.error || 'Admin access expired. Sign in again.');
+        showLogin(data.error || 'Your session expired. Sign in again.');
       }
       const error = new Error(data.error || `Request failed (HTTP ${response.status})`);
       error.status = response.status;
@@ -474,18 +500,13 @@ function startSyncPolling() {
 
 // Main initialization
 async function loadDashboard() {
-  if (!getAdminToken()) {
-    showLogin();
-    return;
-  }
-
   try {
     setSyncStatus('syncing');
     const data = await api('admin/content');
     dashboard.hidden = false;
     loginForm.hidden = true;
     signoutButton.hidden = false;
-    setSyncStatus('synced');
+    showDashboardFor(null);
     
     if (data.latestMessage) {
       document.getElementById('message-title').value = data.latestMessage.title;
@@ -533,26 +554,56 @@ async function loadDashboard() {
   }
 }
 
-loginForm.addEventListener('submit', async (event) => {
-  event.preventDefault();
-  const token = loginToken.value.trim();
-  if (!token) return;
-
-  try {
-    sessionStorage.setItem(ADMIN_TOKEN_KEY, token);
-  } catch {
-    loginMessage.textContent = 'This browser blocked session storage. Enable it to sign in.';
-    return;
-  }
-
-  loginMessage.textContent = 'Checking admin access…';
-  await loadDashboard();
+modeToggle.addEventListener('click', () => {
+  authMode = authMode === 'login' ? 'register' : 'login';
+  loginMessage.textContent = '';
+  applyAuthMode();
+  if (usernameInput) usernameInput.focus();
 });
 
-signoutButton.addEventListener('click', () => {
-  try { sessionStorage.removeItem(ADMIN_TOKEN_KEY); } catch {}
-  loginToken.value = '';
+loginForm.addEventListener('submit', async (event) => {
+  event.preventDefault();
+  const username = (usernameInput?.value ?? '').trim();
+  const password = passwordInput?.value ?? '';
+  if (!username || !password) return;
+
+  const registering = authMode === 'register';
+  if (submitButton) submitButton.disabled = true;
+  loginMessage.textContent = registering ? 'Creating your account…' : 'Signing you in…';
+
+  try {
+    const result = await api('admin/auth', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: registering ? 'register' : 'login', username, password }),
+    });
+    if (passwordInput) passwordInput.value = '';
+    showToast(registering ? `Welcome, ${result.user.username}` : `Signed in as ${result.user.username}`, 'success');
+    await loadDashboard();
+    showDashboardFor(result.user);
+  } catch (error) {
+    if (error.status === 401) loginMessage.textContent = error.message;
+    else if (error.status === 409) loginMessage.textContent = error.message;
+    else loginMessage.textContent = error.message;
+    showToast(error.message, 'error');
+    setSyncStatus('error', error.message);
+  } finally {
+    if (submitButton) submitButton.disabled = false;
+  }
+});
+
+signoutButton.addEventListener('click', async () => {
+  try {
+    await api('admin/auth', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'logout' }),
+    });
+  } catch {
+    // Signing out locally is still correct even if the request fails.
+  }
   showLogin('You have been signed out.');
+  showToast('Signed out', 'success');
 });
 
 // Form handlers with enhanced UX
@@ -653,7 +704,7 @@ document.getElementById('event-form').addEventListener('submit', async (event) =
 });
 
 // Initialize
+applyAuthMode();
 loadDashboard().catch((error) => {
-  showToast(error.message, 'error');
-  setSyncStatus('error');
+  showLogin(error.message);
 });

@@ -12,6 +12,7 @@
     <header class="admin-header">
       <a href="index.html" class="back-link">← Public site</a>
       <h1>Chapter admin</h1>
+      <span id="admin-identity" class="admin-identity"></span>
       <button id="admin-signout" class="btn btn-primary" type="button" hidden>Sign out</button>
 <div id="sync-indicator" class="sync-indicator" title="Sync status" role="status" aria-live="polite">
       <span class="sync-dot"></span><span>Checking…</span>
@@ -21,13 +22,21 @@
     <p id="admin-status" role="status" aria-live="polite"></p>
 
     <form id="admin-login-form" class="admin-panel admin-login" autocomplete="off">
-      <h2>Admin sign in</h2>
+      <h2 id="admin-auth-heading">Admin sign in</h2>
+      <p class="field-hint" id="admin-auth-hint">Chapter editors sign in here to update the public site.</p>
       <div class="form-group">
-        <label for="admin-token">Admin access token</label>
-        <input id="admin-token" type="password" required autocomplete="current-password" />
+        <label for="admin-username">Username</label>
+        <input id="admin-username" name="username" type="text" required autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="e.g. kwame" />
+      </div>
+      <div class="form-group">
+        <label for="admin-password">Password</label>
+        <input id="admin-password" name="password" type="password" required minlength="8" autocomplete="current-password" placeholder="At least 8 characters" />
       </div>
       <p id="admin-login-message" class="field-hint" role="status" aria-live="polite"></p>
-      <button class="btn btn-primary" type="submit">Sign in</button>
+      <div class="auth-actions">
+        <button id="admin-submit" class="btn btn-primary" type="submit">Sign in</button>
+        <button id="admin-mode-toggle" class="auth-switch" type="button">New here? Create an account</button>
+      </div>
     </form>
 
     <section id="dashboard" class="admin-panel" hidden>
